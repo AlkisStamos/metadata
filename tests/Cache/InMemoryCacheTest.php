@@ -8,8 +8,19 @@
 
 namespace AlkisStamos\Metadata\Tests\Cache;
 use AlkisStamos\Metadata\Cache\InMemoryCache;
+use AlkisStamos\Metadata\Cache\InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @package Metadata
+ * @author Alkis Stamos <stamosalkis@gmail.com>
+ * @license MIT
+ * @copyright Alkis Stamos
+ *
+ * Tests the AlkisStamos\Metadata\Cache\InMemoryCache
+ * Valid and invalid terms refer to non existing/existing keys
+ * Invalid-type term refers to invalid key
+ */
 class InMemoryCacheTest extends TestCase
 {
     public function testGetWithInvalidKey()
@@ -17,6 +28,15 @@ class InMemoryCacheTest extends TestCase
         $cache = new InMemoryCache();
         $default = false;
         $this->assertSame($default,$cache->get('key',$default));
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testWithInvalidKeyType()
+    {
+        $cache = new InMemoryCache();
+        $cache->get(null);
     }
 
     public function testGetWithValidKey()

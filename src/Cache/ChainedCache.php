@@ -89,12 +89,15 @@ class ChainedCache extends AbstractCache
      */
     public function set($key, $value, $ttl = null)
     {
-        $this->inMemoryCache->set($key,$value,$ttl);
+        $ans = $this->inMemoryCache->set($key,$value,$ttl);
         foreach($this->availablePools as $pool)
         {
-            $pool->set($key,$value,$ttl);
+            if(!$pool->set($key,$value,$ttl))
+            {
+                $ans = false;
+            }
         }
-        return true;
+        return $ans;
     }
 
     /**
@@ -109,12 +112,15 @@ class ChainedCache extends AbstractCache
      */
     public function delete($key)
     {
-        $this->inMemoryCache->delete($key);
+        $ans = $this->inMemoryCache->delete($key);
         foreach($this->availablePools as $pool)
         {
-            $pool->delete($key);
+            if(!$pool->delete($key))
+            {
+                $ans = false;
+            }
         }
-        return true;
+        return $ans;
     }
 
     /**
@@ -124,12 +130,15 @@ class ChainedCache extends AbstractCache
      */
     public function clear()
     {
-        $this->inMemoryCache->clear();
+        $ans = $this->inMemoryCache->clear();
         foreach($this->availablePools as $pool)
         {
-            $pool->clear();
+            if(!$pool->clear())
+            {
+                $ans = false;
+            }
         }
-        return true;
+        return $ans;
     }
 
     /**
@@ -168,11 +177,15 @@ class ChainedCache extends AbstractCache
      */
     public function setMultiple($values, $ttl = null)
     {
+        $ans = true;
         foreach($values as $key=>$value)
         {
-            $this->set($key,$value,$ttl);
+            if(!$this->set($key,$value,$ttl))
+            {
+                $ans = false;
+            }
         }
-        return true;
+        return $ans;
     }
 
     /**
@@ -188,11 +201,15 @@ class ChainedCache extends AbstractCache
      */
     public function deleteMultiple($keys)
     {
+        $ans = true;
         foreach($keys as $key)
         {
-            $this->delete($key);
+            if(!$this->delete($key))
+            {
+                $ans = false;
+            }
         }
-        return true;
+        return $ans;
     }
 
     /**

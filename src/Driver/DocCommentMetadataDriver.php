@@ -20,7 +20,7 @@ use AlkisStamos\Metadata\Metadata\TypeMetadata;
  *
  * Generates metadata by parsing common PHPDoc (https://www.phpdoc.org/) comments
  */
-class DocCommentDriver extends ReflectionMetadataDriver
+class DocCommentMetadataDriver extends ReflectionMetadataDriver
 {
     /**
      * Generates the property metadata from a reflection property

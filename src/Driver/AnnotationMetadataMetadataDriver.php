@@ -23,7 +23,7 @@ use Doctrine\Common\Annotations\Reader;
  *
  * Driver to parse custom annotations in addition to the doc block and reflection properties
  */
-class AnnotationMetadataDriver extends DocCommentDriver
+class AnnotationMetadataMetadataDriver extends DocCommentMetadataDriver
 {
     /**
      * Default annotation reader

@@ -9,7 +9,7 @@
 namespace AlkisStamos\Metadata;
 
 use AlkisStamos\Metadata\Cache\ChainedCache;
-use AlkisStamos\Metadata\Driver\AnnotationMetadataDriver;
+use AlkisStamos\Metadata\Driver\AnnotationMetadataMetadataDriver;
 use AlkisStamos\Metadata\Driver\MetadataDriverInterface;
 use AlkisStamos\Metadata\Metadata\ClassMetadata;
 use AlkisStamos\Metadata\Metadata\MethodMetadata;
@@ -220,12 +220,12 @@ class MetadataDriver implements MetadataDriverInterface
     {
         if($cacheDir === null)
         {
-            $this->register(new AnnotationMetadataDriver(
+            $this->register(new AnnotationMetadataMetadataDriver(
                 new AnnotationReader()
             ));
             return;
         }
-        $this->register(new AnnotationMetadataDriver(
+        $this->register(new AnnotationMetadataMetadataDriver(
             new FileCacheReader(
                 new AnnotationReader(),$cacheDir
             )
