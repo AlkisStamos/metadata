@@ -1,7 +1,6 @@
 {
   "name": "alkis-stamos/metadata",
   "description": "Provides metadata generation for PHP classes",
-  "type": "library",
   "license": "MIT",
   "keywords": ["metadata"],
   "authors": [{
