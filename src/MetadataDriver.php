@@ -11,6 +11,7 @@ namespace AlkisStamos\Metadata;
 use AlkisStamos\Metadata\Cache\ChainedCache;
 use AlkisStamos\Metadata\Driver\AnnotationMetadataMetadataDriver;
 use AlkisStamos\Metadata\Driver\MetadataDriverInterface;
+use AlkisStamos\Metadata\Driver\ReflectionMetadataDriver;
 use AlkisStamos\Metadata\Metadata\ClassMetadata;
 use AlkisStamos\Metadata\Metadata\MethodMetadata;
 use AlkisStamos\Metadata\Metadata\PropertyMetadata;
@@ -46,6 +47,12 @@ class MetadataDriver implements MetadataDriverInterface
      * @var CacheInterface
      */
     protected $cache;
+    /**
+     * Local flag to help with lazy initialization
+     *
+     * @var bool
+     */
+    private $isInitialized = false;
 
     /**
      * MetadataDriver constructor.
@@ -95,7 +102,7 @@ class MetadataDriver implements MetadataDriverInterface
         {
             return $cached;
         }
-        foreach($this->drivers as $metadataDriver)
+        foreach($this->getDrivers() as $metadataDriver)
         {
             $classMetadata = $metadataDriver->getClassMetadata($class);
             if($classMetadata !== null)
@@ -123,7 +130,7 @@ class MetadataDriver implements MetadataDriverInterface
         {
             return $cached;
         }
-        foreach($this->drivers as $metadataDriver)
+        foreach($this->getDrivers() as $metadataDriver)
         {
             $propertyMetadata = $metadataDriver->getPropertyMetadata($property);
             if($propertyMetadata !== null)
@@ -151,7 +158,7 @@ class MetadataDriver implements MetadataDriverInterface
         {
             return $cached;
         }
-        foreach($this->drivers as $metadataDriver)
+        foreach($this->getDrivers() as $metadataDriver)
         {
             $methodMetadata = $metadataDriver->getMethodMetadata($method);
             if($methodMetadata !== null)
@@ -230,5 +237,25 @@ class MetadataDriver implements MetadataDriverInterface
                 new AnnotationReader(),$cacheDir
             )
         ));
+    }
+
+    /**
+     * Returns the registered drivers or initializes the component with the default ReflectionMetadataDriver
+     *
+     * @return MetadataDriverInterface[]
+     */
+    public function getDrivers()
+    {
+        if(!$this->isInitialized)
+        {
+            $this->isInitialized = true;
+            if(count($this->drivers) === 0)
+            {
+                $this->register(
+                    new ReflectionMetadataDriver()
+                );
+            }
+        }
+        return $this->drivers;
     }
 }
