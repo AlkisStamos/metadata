@@ -12,6 +12,7 @@ use AlkisStamos\Metadata\Annotation\Annotation;
 use AlkisStamos\Metadata\Annotation\Property;
 use AlkisStamos\Metadata\Driver\AnnotationMetadataMetadataDriver;
 use AlkisStamos\Metadata\Metadata\ClassMetadata;
+use AlkisStamos\Metadata\MetadataDriver;
 use Doctrine\Common\Annotations\Reader;
 use PHPUnit\Framework\TestCase;
 
@@ -307,6 +308,33 @@ class AnnotationMetadataDriverTest extends TestCase
         $typeName = $property->type;
         $this->assertSame('string',"$typeName");
     }
+
+    public function testGetClassMetadataWithSettersAndGetters()
+    {
+        $propertyAnnotation = $this->createMock(Property::class);
+        $propertyAnnotation->expects($this->once())
+            ->method('getSetter')
+            ->willReturn('custom_setter');
+        $reader = $this->createMock(Reader::class);
+        $reader->expects($this->exactly(2))
+            ->method('getPropertyAnnotations')
+            ->will($this->onConsecutiveCalls([],[$propertyAnnotation]));
+        $reader->expects($this->exactly(4))
+            ->method('getMethodAnnotations')
+            ->willReturn([]);
+        $reader->expects($this->once())
+            ->method('getClassAnnotations')
+            ->willReturn([]);
+        $driver = new AnnotationMetadataMetadataDriver($reader);
+        $classMetadata = $driver->getClassMetadata(new \ReflectionClass(MockClassWithGettersAndSetters::class));
+        $this->assertEquals(2,count($classMetadata->properties));
+        $this->assertArrayHasKey('prop1',$classMetadata->properties);
+        $this->assertArrayHasKey('prop2',$classMetadata->properties);
+        $this->assertEquals('getProp1',$classMetadata->properties['prop1']->getter);
+        $this->assertEquals('setProp1',$classMetadata->properties['prop1']->setter);
+        $this->assertEquals('getProp2',$classMetadata->properties['prop2']->getter);
+        $this->assertEquals('custom_setter',$classMetadata->properties['prop2']->setter);
+    }
 }
 
 class MockClass {}
@@ -341,5 +369,41 @@ class MockClassWithMethods
      * @return bool[]
      */
     public function method4(bool $param1, $param2) { return []; }
+}
+class MockClassWithGettersAndSetters{
+    protected $prop1;
+    protected $prop2;
+
+    /**
+     * @return string
+     */
+    public function getProp1()
+    {
+        return $this->prop1;
+    }
+
+    /**
+     * @param string $prop1
+     */
+    public function setProp1($prop1): void
+    {
+        $this->prop1 = $prop1;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProp2()
+    {
+        return $this->prop2;
+    }
+
+    /**
+     * @param string $prop2
+     */
+    public function setProp2($prop2): void
+    {
+        $this->prop2 = $prop2;
+    }
 }
 class CustomAnnotationForMethod extends Annotation {}

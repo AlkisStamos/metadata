@@ -8,6 +8,7 @@
 
 namespace AlkisStamos\Metadata\Driver;
 use AlkisStamos\Metadata\Metadata\ClassMetadata;
+use AlkisStamos\Metadata\Metadata\PropertyMetadata;
 
 /**
  * @package Metadata
@@ -37,7 +38,16 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
         $properties = $class->getProperties();
         foreach($properties as $property)
         {
-            $classMetadata->addPropertyMetadata($this->getPropertyMetadata($property));
+            $propertyMetadata = $this->getPropertyMetadata($property);
+            if($propertyMetadata->getter === null)
+            {
+                $propertyMetadata->getter = $this->getPropertyMethodName($classMetadata, $propertyMetadata);
+            }
+            if($propertyMetadata->setter === null)
+            {
+                $propertyMetadata->setter = $this->getPropertyMethodName($classMetadata, $propertyMetadata, 'set');
+            }
+            $classMetadata->addPropertyMetadata($propertyMetadata);
         }
         return $classMetadata;
     }
@@ -108,5 +118,19 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
         }
         $realType = $type;
         return false;
+    }
+
+    /**
+     * Returns the setter or getter for the property
+     *
+     * @param ClassMetadata $classMetadata
+     * @param PropertyMetadata $propertyMetadata
+     * @param string $prefix
+     * @return null|string
+     */
+    protected function getPropertyMethodName(ClassMetadata $classMetadata, PropertyMetadata $propertyMetadata, $prefix='get'): ?string
+    {
+        $methodName = $prefix.ucfirst($propertyMetadata->name);
+        return isset($classMetadata->methods[$methodName]) ? $methodName : null;
     }
 }
