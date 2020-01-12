@@ -26,7 +26,7 @@ class MetadataDriverTest extends TestCase
      */
     private $root;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->root = vfsStream::setup('testDir');
     }
@@ -115,12 +115,10 @@ class MetadataDriverTest extends TestCase
         $this->assertSame($metadata,$driver->getClassMetadata($class));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Cannot generate class metadata for class_name with the registered drivers
-     */
     public function testGetClassMetadataWithNoValidDriver()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot generate class metadata for class_name with the registered drivers');
         $cache = $this->createMock(CacheInterface::class);
         $cache->expects($this->once())
             ->method('has')
@@ -203,12 +201,10 @@ class MetadataDriverTest extends TestCase
         $this->assertSame($metadata,$driver->getPropertyMetadata($property));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Cannot generate metadata for class_name::property_name with the registered drivers
-     */
     public function testGetPropertyMetadataWithNoValidDriver()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot generate metadata for class_name::property_name with the registered drivers');
         $cache = $this->createMock(CacheInterface::class);
         $cache->expects($this->once())
             ->method('has')
@@ -298,12 +294,10 @@ class MetadataDriverTest extends TestCase
         $this->assertSame($metadata,$driver->getMethodMetadata($method));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Cannot generate metadata for class_name::method_name with the registered drivers
-     */
     public function testGetMethodMetadataWithNoValidDriver()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot generate metadata for class_name::method_name with the registered drivers');
         $cache = $this->createMock(CacheInterface::class);
         $cache->expects($this->once())
             ->method('has')

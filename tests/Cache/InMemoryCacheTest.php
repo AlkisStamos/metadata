@@ -30,11 +30,9 @@ class InMemoryCacheTest extends TestCase
         $this->assertSame($default,$cache->get('key',$default));
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testWithInvalidKeyType()
     {
+        $this->expectException(InvalidArgumentException::class);
         $cache = new InMemoryCache();
         $cache->get(null);
     }
