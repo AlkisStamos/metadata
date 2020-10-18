@@ -6,11 +6,12 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Driver;
-use AlkisStamos\Metadata\Metadata\ArgumentMetadata;
-use AlkisStamos\Metadata\Metadata\MethodMetadata;
-use AlkisStamos\Metadata\Metadata\PropertyMetadata;
-use AlkisStamos\Metadata\Metadata\TypeMetadata;
+namespace Alks\Metadata\Driver;
+
+use Alks\Metadata\Metadata\ArgumentMetadata;
+use Alks\Metadata\Metadata\MethodMetadata;
+use Alks\Metadata\Metadata\PropertyMetadata;
+use Alks\Metadata\Metadata\TypeMetadata;
 
 /**
  * @package Metadata
@@ -32,44 +33,10 @@ class DocCommentMetadataDriver extends ReflectionMetadataDriver
     {
         $propertyMetadata = parent::getPropertyMetadata($property);
         $type = $this->fromDocBlockString($property->getDocComment());
-        if($type !== null)
-        {
+        if ($type !== null) {
             $propertyMetadata->type = $type;
         }
         return $propertyMetadata;
-    }
-
-    /**
-     * Generates the method metadata from a reflection method
-     *
-     * @param \ReflectionMethod $method
-     * @return MethodMetadata|null
-     */
-    public function getMethodMetadata(\ReflectionMethod $method): ?MethodMetadata
-    {
-        $methodMetadata = parent::getMethodMetadata($method);
-        $docBlock = null;
-        if($methodMetadata->returnType === null)
-        {
-            $docBlock = $this->parseDocblockProperties($method->getDocComment());
-            $methodMetadata->returnType = $this->fromDocBlockString($docBlock,'return',true);
-        }
-        $arguments = $method->getParameters();
-        foreach($arguments as $argument)
-        {
-            $argumentMetadata = $methodMetadata->getArgumentMetadata($argument->getName());
-            if($argumentMetadata === null)
-            {
-                $argumentMetadata = new ArgumentMetadata($argument->getName());
-                $methodMetadata->addArgumentMetadata($argumentMetadata);
-            }
-            if($argumentMetadata->type === null)
-            {
-                $docBlock = $docBlock ?? $this->parseDocblockProperties($method->getDocComment());
-                $argumentMetadata->type = $this->parseDocBlockParameter($docBlock,$argumentMetadata->name,true);
-            }
-        }
-        return $methodMetadata;
     }
 
     /**
@@ -83,97 +50,13 @@ class DocCommentMetadataDriver extends ReflectionMetadataDriver
      * @param boolean $parsed
      * @return TypeMetadata|null
      */
-    private function fromDocBlockString($docBlock, $target='var', $parsed=false)
+    private function fromDocBlockString($docBlock, $target = 'var', $parsed = false)
     {
         $props = $parsed === true ? $docBlock : $this->parseDocblockProperties($docBlock);
-        if(isset($props[$target][0]))
-        {
+        if (isset($props[$target][0])) {
             return self::fromDocBlockProperty($props[$target][0]);
         }
         return null;
-    }
-    
-    /**
-     * Parses the type from a doc block param line ("@param string $argument"). For complex types/classes the fully
-     * qualified name should be used in order to parse the type
-     *
-     * @param $docBlock
-     * @param string $parameterName
-     * @param bool $parsed
-     * @param string $target
-     * @return TypeMetadata|null
-     */
-    private function parseDocBlockParameter($docBlock, string $parameterName, bool $parsed, string $target='param'): ?TypeMetadata
-    {
-        $props = $parsed === true ? $docBlock : $this->parseDocblockProperties($docBlock);
-        if(isset($props[$target]))
-        {
-            foreach($props[$target] as $prop)
-            {
-                if(strpos($prop,$parameterName) !== false)
-                {
-                    return $this->fromDocBlockProperty(trim(str_replace('$'.$parameterName,'',$prop)));
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Does generate the type instance from a doc block property. Is defined separately for reusability.
-     *
-     * @param $property
-     * @return TypeMetadata|null
-     */
-    private function fromDocBlockProperty($property)
-    {
-        $isNullable = false;
-        $isArray = false;
-        $typeName = $property;
-        $this->isMultipleTypes($property,$typeName,$isNullable);
-        if($this->isCollectionType($typeName,$typeName))
-        {
-            $isArray = true;
-        }
-        $isFlat = $this->isFlatType($typeName);
-        if(!$isFlat)
-        {
-            if(!class_exists($typeName))
-            {
-                return null;
-            }
-        }
-        $typeMetadata= new TypeMetadata($typeName);
-        $typeMetadata->isArray = $isArray;
-        $typeMetadata->isNullable = $isNullable;
-        $typeMetadata->isFlat = $isFlat;
-        return $typeMetadata;
-    }
-
-    /**
-     * The method will check if multiple types were defined in a doc block for a given type. If so it will extract the
-     * real type name (the first one defined) but will also check if the type is nullable, eg:
-     * string|null|mixed => true, realType='string', nullable=true
-     *
-     * @param $docBlockType
-     * @param $realType
-     * @param $isNullable
-     * @return bool
-     */
-    private function isMultipleTypes($docBlockType, &$realType, &$isNullable)
-    {
-        if(strpos($docBlockType,'|') !== false)
-        {
-            if(stripos('|' . $docBlockType . '|', '|null|') !== false)
-            {
-                $isNullable = true;
-            }
-            $realType = explode('|',$docBlockType)[0];
-            return true;
-        }
-        $realType = $docBlockType;
-        $isNullable = false;
-        return false;
     }
 
     /**
@@ -194,5 +77,109 @@ class DocCommentMetadataDriver extends ReflectionMetadataDriver
             }
         }
         return $properties;
+    }
+
+    /**
+     * Does generate the type instance from a doc block property. Is defined separately for re-usability.
+     *
+     * @param $property
+     * @return TypeMetadata|null
+     */
+    private function fromDocBlockProperty($property)
+    {
+        $isNullable = false;
+        $isArray = false;
+        $typeName = $property;
+        $this->isMultipleTypes($property, $typeName, $isNullable);
+        if ($this->isCollectionType($typeName, $typeName)) {
+            $isArray = true;
+        }
+        $isFlat = $this->isFlatType($typeName);
+        if (!$isFlat) {
+            if (!class_exists($typeName)) {
+                return null;
+            }
+        }
+        $typeMetadata = new TypeMetadata($typeName);
+        $typeMetadata->isArray = $isArray;
+        $typeMetadata->isNullable = $isNullable;
+        $typeMetadata->isFlat = $isFlat;
+        return $typeMetadata;
+    }
+
+    /**
+     * The method will check if multiple types were defined in a doc block for a given type. If so it will extract the
+     * real type name (the first one defined) but will also check if the type is nullable, eg:
+     * string|null|mixed => true, realType='string', nullable=true
+     *
+     * @param $docBlockType
+     * @param $realType
+     * @param $isNullable
+     * @return bool
+     */
+    private function isMultipleTypes($docBlockType, &$realType, &$isNullable)
+    {
+        if (strpos($docBlockType, '|') !== false) {
+            if (stripos('|' . $docBlockType . '|', '|null|') !== false) {
+                $isNullable = true;
+            }
+            $realType = explode('|', $docBlockType)[0];
+            return true;
+        }
+        $realType = $docBlockType;
+        $isNullable = false;
+        return false;
+    }
+
+    /**
+     * Generates the method metadata from a reflection method
+     *
+     * @param \ReflectionMethod $method
+     * @return MethodMetadata|null
+     */
+    public function getMethodMetadata(\ReflectionMethod $method): ?MethodMetadata
+    {
+        $methodMetadata = parent::getMethodMetadata($method);
+        $docBlock = null;
+        if ($methodMetadata->returnType === null) {
+            $docBlock = $this->parseDocblockProperties($method->getDocComment());
+            $methodMetadata->returnType = $this->fromDocBlockString($docBlock, 'return', true);
+        }
+        $arguments = $method->getParameters();
+        foreach ($arguments as $argument) {
+            $argumentMetadata = $methodMetadata->getArgumentMetadata($argument->getName());
+            if ($argumentMetadata === null) {
+                $argumentMetadata = new ArgumentMetadata($argument->getName());
+                $methodMetadata->addArgumentMetadata($argumentMetadata);
+            }
+            if ($argumentMetadata->type === null) {
+                $docBlock = $docBlock ?? $this->parseDocblockProperties($method->getDocComment());
+                $argumentMetadata->type = $this->parseDocBlockParameter($docBlock, $argumentMetadata->name, true);
+            }
+        }
+        return $methodMetadata;
+    }
+
+    /**
+     * Parses the type from a doc block param line ("@param string $argument"). For complex types/classes the fully
+     * qualified name should be used in order to parse the type
+     *
+     * @param $docBlock
+     * @param string $parameterName
+     * @param bool $parsed
+     * @param string $target
+     * @return TypeMetadata|null
+     */
+    private function parseDocBlockParameter($docBlock, string $parameterName, bool $parsed, string $target = 'param'): ?TypeMetadata
+    {
+        $props = $parsed === true ? $docBlock : $this->parseDocblockProperties($docBlock);
+        if (isset($props[$target])) {
+            foreach ($props[$target] as $prop) {
+                if (strpos($prop, $parameterName) !== false) {
+                    return $this->fromDocBlockProperty(trim(str_replace('$' . $parameterName, '', $prop)));
+                }
+            }
+        }
+        return null;
     }
 }

@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Metadata;
+namespace Alks\Metadata\Metadata;
 
 /**
  * @package Metadata
@@ -80,8 +80,8 @@ class MethodMetadata extends AbstractMetadataHost
      * @param null $default
      * @return ArgumentMetadata|null
      */
-    public function getArgumentMetadata(string $name, $default=null)
+    public function getArgumentMetadata(string $name, $default = null)
     {
-        return array_key_exists($name,$this->arguments) ? $this->arguments[$name] : $default;
+        return array_key_exists($name, $this->arguments) ? $this->arguments[$name] : $default;
     }
 }

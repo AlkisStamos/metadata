@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Metadata;
+namespace Alks\Metadata\Metadata;
 /**
  * @package Metadata
  * @author Alkis Stamos <stamosalkis@gmail.com>
@@ -59,16 +59,6 @@ class TypeMetadata
     }
 
     /**
-     * Stringify the type with only its name (for direct comparison "$type" === string)
-     *
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return $this->name;
-    }
-
-    /**
      * Returns the fallback mixed type
      *
      * @return TypeMetadata
@@ -78,5 +68,15 @@ class TypeMetadata
         $self = new self('mixed');
         $self->isFlat = true;
         return $self;
+    }
+
+    /**
+     * Stringify the type with only its name (for direct comparison "$type" === string)
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->name;
     }
 }

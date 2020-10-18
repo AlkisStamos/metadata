@@ -6,7 +6,8 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Cache;
+namespace Alks\Metadata\Cache;
+
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -39,88 +40,9 @@ class ChainedCache extends AbstractCache
      * If no memory cache is passed
      * @param InMemoryCache|null $inMemoryCache
      */
-    public function __construct(InMemoryCache $inMemoryCache=null)
+    public function __construct(InMemoryCache $inMemoryCache = null)
     {
         $this->inMemoryCache = $inMemoryCache ?? new InMemoryCache();
-    }
-
-    /**
-     * Fetches a value from the cache.
-     *
-     * @param string $key The unique key of this item in the cache.
-     * @param mixed $default Default value to return if the key does not exist.
-     *
-     * @return mixed The value of the item from the cache, or $default in case of cache miss.
-     *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if the $key string is not a legal value.
-     */
-    public function get($key, $default = null)
-    {
-        if(!$this->inMemoryCache->has($key))
-        {
-            foreach($this->availablePools as $pool)
-            {
-                if($pool->has($key))
-                {
-                    $item = $pool->get($key);
-                    $this->inMemoryCache->set($key, $item);
-                    return $item;
-                }
-            }
-            return $default;
-        }
-        return $this->inMemoryCache->get($key,$default);
-    }
-
-    /**
-     * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time.
-     *
-     * @param string $key The key of the item to store.
-     * @param mixed $value The value of the item to store, must be serializable.
-     * @param null|int|\DateInterval $ttl Optional. The TTL value of this item. If no value is sent and
-     *                                      the driver supports TTL then the library may set a default value
-     *                                      for it or let the driver take care of that.
-     *
-     * @return bool True on success and false on failure.
-     *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if the $key string is not a legal value.
-     */
-    public function set($key, $value, $ttl = null)
-    {
-        $ans = $this->inMemoryCache->set($key,$value,$ttl);
-        foreach($this->availablePools as $pool)
-        {
-            if(!$pool->set($key,$value,$ttl))
-            {
-                $ans = false;
-            }
-        }
-        return $ans;
-    }
-
-    /**
-     * Delete an item from the cache by its unique key.
-     *
-     * @param string $key The unique cache key of the item to delete.
-     *
-     * @return bool True if the item was successfully removed. False if there was an error.
-     *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if the $key string is not a legal value.
-     */
-    public function delete($key)
-    {
-        $ans = $this->inMemoryCache->delete($key);
-        foreach($this->availablePools as $pool)
-        {
-            if(!$pool->delete($key))
-            {
-                $ans = false;
-            }
-        }
-        return $ans;
     }
 
     /**
@@ -131,10 +53,8 @@ class ChainedCache extends AbstractCache
     public function clear()
     {
         $ans = $this->inMemoryCache->clear();
-        foreach($this->availablePools as $pool)
-        {
-            if(!$pool->clear())
-            {
+        foreach ($this->availablePools as $pool) {
+            if (!$pool->clear()) {
                 $ans = false;
             }
         }
@@ -155,10 +75,35 @@ class ChainedCache extends AbstractCache
      */
     public function getMultiple($keys, $default = null)
     {
-        foreach($keys as $key)
-        {
+        foreach ($keys as $key) {
             yield $this->get($key, $default);
         }
+    }
+
+    /**
+     * Fetches a value from the cache.
+     *
+     * @param string $key The unique key of this item in the cache.
+     * @param mixed $default Default value to return if the key does not exist.
+     *
+     * @return mixed The value of the item from the cache, or $default in case of cache miss.
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     *   MUST be thrown if the $key string is not a legal value.
+     */
+    public function get($key, $default = null)
+    {
+        if (!$this->inMemoryCache->has($key)) {
+            foreach ($this->availablePools as $pool) {
+                if ($pool->has($key)) {
+                    $item = $pool->get($key);
+                    $this->inMemoryCache->set($key, $item);
+                    return $item;
+                }
+            }
+            return $default;
+        }
+        return $this->inMemoryCache->get($key, $default);
     }
 
     /**
@@ -178,10 +123,33 @@ class ChainedCache extends AbstractCache
     public function setMultiple($values, $ttl = null)
     {
         $ans = true;
-        foreach($values as $key=>$value)
-        {
-            if(!$this->set($key,$value,$ttl))
-            {
+        foreach ($values as $key => $value) {
+            if (!$this->set($key, $value, $ttl)) {
+                $ans = false;
+            }
+        }
+        return $ans;
+    }
+
+    /**
+     * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time.
+     *
+     * @param string $key The key of the item to store.
+     * @param mixed $value The value of the item to store, must be serializable.
+     * @param null|int|\DateInterval $ttl Optional. The TTL value of this item. If no value is sent and
+     *                                      the driver supports TTL then the library may set a default value
+     *                                      for it or let the driver take care of that.
+     *
+     * @return bool True on success and false on failure.
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     *   MUST be thrown if the $key string is not a legal value.
+     */
+    public function set($key, $value, $ttl = null)
+    {
+        $ans = $this->inMemoryCache->set($key, $value, $ttl);
+        foreach ($this->availablePools as $pool) {
+            if (!$pool->set($key, $value, $ttl)) {
                 $ans = false;
             }
         }
@@ -202,10 +170,29 @@ class ChainedCache extends AbstractCache
     public function deleteMultiple($keys)
     {
         $ans = true;
-        foreach($keys as $key)
-        {
-            if(!$this->delete($key))
-            {
+        foreach ($keys as $key) {
+            if (!$this->delete($key)) {
+                $ans = false;
+            }
+        }
+        return $ans;
+    }
+
+    /**
+     * Delete an item from the cache by its unique key.
+     *
+     * @param string $key The unique cache key of the item to delete.
+     *
+     * @return bool True if the item was successfully removed. False if there was an error.
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     *   MUST be thrown if the $key string is not a legal value.
+     */
+    public function delete($key)
+    {
+        $ans = $this->inMemoryCache->delete($key);
+        foreach ($this->availablePools as $pool) {
+            if (!$pool->delete($key)) {
                 $ans = false;
             }
         }
@@ -229,14 +216,11 @@ class ChainedCache extends AbstractCache
      */
     public function has($key)
     {
-        if($this->inMemoryCache->has($key))
-        {
+        if ($this->inMemoryCache->has($key)) {
             return true;
         }
-        foreach($this->availablePools as $pool)
-        {
-            if($pool->has($key))
-            {
+        foreach ($this->availablePools as $pool) {
+            if ($pool->has($key)) {
                 return true;
             }
         }

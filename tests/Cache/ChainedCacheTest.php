@@ -6,9 +6,10 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Tests\Cache;
-use AlkisStamos\Metadata\Cache\ChainedCache;
-use AlkisStamos\Metadata\Cache\InMemoryCache;
+namespace Alks\Metadata\Tests\Cache;
+
+use Alks\Metadata\Cache\ChainedCache;
+use Alks\Metadata\Cache\InMemoryCache;
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
 
@@ -19,8 +20,8 @@ class ChainedCacheTest extends TestCase
         $cache = new ChainedCache();
         $value = new \stdClass();
         $value->prop = 'test';
-        $cache->set('key',$value);
-        $this->assertSame($value,$cache->get('key'));
+        $cache->set('key', $value);
+        $this->assertSame($value, $cache->get('key'));
     }
 
     public function testGetWithCustomInMemoryCache()
@@ -37,8 +38,8 @@ class ChainedCacheTest extends TestCase
             ->with('key')
             ->willReturn($value);
         $cache = new ChainedCache($inMemoryCache);
-        $cache->set('key',$value);
-        $this->assertSame($value,$cache->get('key'));
+        $cache->set('key', $value);
+        $this->assertSame($value, $cache->get('key'));
     }
 
     public function testGetWithCustomCache()
@@ -60,10 +61,10 @@ class ChainedCacheTest extends TestCase
             ->willReturn(false);
         $memoryCache->expects($this->once())
             ->method('set')
-            ->with('key',$value);
+            ->with('key', $value);
         $cache = new ChainedCache($memoryCache);
         $cache->register($customCache);
-        $this->assertSame($value,$cache->get('key'));
+        $this->assertSame($value, $cache->get('key'));
     }
 
     public function testGetWithNonExistingKey()
@@ -81,7 +82,7 @@ class ChainedCacheTest extends TestCase
         $cache->register($customCache);
         $default = new \stdClass();
         $default->test = 'test';
-        $this->assertSame($default,$cache->get('key',$default));
+        $this->assertSame($default, $cache->get('key', $default));
     }
 
     public function testSetWithCustomCache()
@@ -91,12 +92,12 @@ class ChainedCacheTest extends TestCase
         $customCache = $this->createMock(CacheInterface::class);
         $customCache->expects($this->once())
             ->method('set')
-            ->with('key',$value)
+            ->with('key', $value)
             ->willReturn(true);
         $cache = new ChainedCache();
         $cache->register($customCache);
-        $this->assertTrue($cache->set('key',$value));
-        $this->assertSame($value,$cache->get('key'));
+        $this->assertTrue($cache->set('key', $value));
+        $this->assertSame($value, $cache->get('key'));
     }
 
     public function testInvalidSet()
@@ -105,11 +106,11 @@ class ChainedCacheTest extends TestCase
         $customCache = $this->createMock(CacheInterface::class);
         $customCache->expects($this->once())
             ->method('set')
-            ->with('key',$value)
+            ->with('key', $value)
             ->willReturn(false);
         $cache = new ChainedCache();
         $cache->register($customCache);
-        $this->assertFalse($cache->set('key',$value));
+        $this->assertFalse($cache->set('key', $value));
     }
 
     public function testDeleteWithoutCustomCache()
@@ -150,26 +151,23 @@ class ChainedCacheTest extends TestCase
 
     public function testClearWithoutCustomCache()
     {
-        $values = [1,2,3];
+        $values = [1, 2, 3];
         $cache = new ChainedCache();
-        foreach($values as $key=>$value)
-        {
-            $cache->set($key.'key',$value);
-            $this->assertTrue($cache->has($key.'key'));
+        foreach ($values as $key => $value) {
+            $cache->set($key . 'key', $value);
+            $this->assertTrue($cache->has($key . 'key'));
         }
         $this->assertTrue($cache->clear());
-        foreach($values as $key=>$value)
-        {
-            $this->assertFalse($cache->has($key.'key'));
+        foreach ($values as $key => $value) {
+            $this->assertFalse($cache->has($key . 'key'));
         }
     }
 
     public function testClearWithCustomCache()
     {
-        $values = [1,2,3];
+        $values = [1, 2, 3];
         $cache = new ChainedCache();
-        foreach($values as $key=>$value)
-        {
+        foreach ($values as $key => $value) {
             $customCache = $this->createMock(CacheInterface::class);
             $customCache->expects($this->exactly(count($values)))
                 ->method('has')
@@ -182,15 +180,13 @@ class ChainedCacheTest extends TestCase
                 ->willReturn(true);
             $cache->register($customCache);
         }
-        foreach($values as $key=>$value)
-        {
-            $this->assertTrue($cache->set($key.'key',$value));
-            $this->assertTrue($cache->has($key.'key'));
+        foreach ($values as $key => $value) {
+            $this->assertTrue($cache->set($key . 'key', $value));
+            $this->assertTrue($cache->has($key . 'key'));
         }
         $this->assertTrue($cache->clear());
-        foreach($values as $key=>$value)
-        {
-            $this->assertFalse($cache->has($key.'key'));
+        foreach ($values as $key => $value) {
+            $this->assertFalse($cache->has($key . 'key'));
         }
     }
 
@@ -211,27 +207,25 @@ class ChainedCacheTest extends TestCase
 
     public function testGetMultiple()
     {
-        $values = [1,2,3];
+        $values = [1, 2, 3];
         $cache = new ChainedCache();
         $keys = [];
         $cacheValues = [];
-        foreach($values as $value)
-        {
+        foreach ($values as $value) {
             $cacheValue = new \stdClass();
             $cacheValue->value = $value;
             $cacheValues[] = $cacheValue;
-            $keys[] = $value.'key';
-            $cache->set($value.'key',$cacheValue);
+            $keys[] = $value . 'key';
+            $cache->set($value . 'key', $cacheValue);
         }
-        foreach($cache->getMultiple($keys) as $currentIter=>$value)
-        {
-            $this->assertSame($cacheValues[$currentIter],$value);
+        foreach ($cache->getMultiple($keys) as $currentIter => $value) {
+            $this->assertSame($cacheValues[$currentIter], $value);
         }
     }
 
     public function testSetMultiple()
     {
-        $values = ['one'=>1,'two'=>2,'three'=>3];
+        $values = ['one' => 1, 'two' => 2, 'three' => 3];
         $inMemoryCache = $this->createMock(InMemoryCache::class);
         $inMemoryCache->expects($this->exactly(count($values)))
             ->method('set')
@@ -242,7 +236,7 @@ class ChainedCacheTest extends TestCase
 
     public function testInvalidSetMultiple()
     {
-        $values = ['one'=>1,'two'=>2,'three'=>3];
+        $values = ['one' => 1, 'two' => 2, 'three' => 3];
         $inMemoryCache = $this->createMock(InMemoryCache::class);
         $inMemoryCache->expects($this->exactly(count($values)))
             ->method('set')
@@ -253,7 +247,7 @@ class ChainedCacheTest extends TestCase
 
     public function testDeleteMultiple()
     {
-        $values = ['one'=>1,'two'=>2,'three'=>3];
+        $values = ['one' => 1, 'two' => 2, 'three' => 3];
         $inMemoryCache = $this->createMock(InMemoryCache::class);
         $inMemoryCache->expects($this->exactly(count($values)))
             ->method('delete')
@@ -264,7 +258,7 @@ class ChainedCacheTest extends TestCase
 
     public function testInvalidDeleteMultiple()
     {
-        $values = ['one'=>1,'two'=>2,'three'=>3];
+        $values = ['one' => 1, 'two' => 2, 'three' => 3];
         $inMemoryCache = $this->createMock(InMemoryCache::class);
         $inMemoryCache->expects($this->exactly(count($values)))
             ->method('delete')

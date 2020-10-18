@@ -6,15 +6,15 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata;
+namespace Alks\Metadata;
 
-use AlkisStamos\Metadata\Cache\ChainedCache;
-use AlkisStamos\Metadata\Driver\AnnotationMetadataMetadataDriver;
-use AlkisStamos\Metadata\Driver\MetadataDriverInterface;
-use AlkisStamos\Metadata\Driver\ReflectionMetadataDriver;
-use AlkisStamos\Metadata\Metadata\ClassMetadata;
-use AlkisStamos\Metadata\Metadata\MethodMetadata;
-use AlkisStamos\Metadata\Metadata\PropertyMetadata;
+use Alks\Metadata\Cache\ChainedCache;
+use Alks\Metadata\Driver\AnnotationMetadataMetadataDriver;
+use Alks\Metadata\Driver\MetadataDriverInterface;
+use Alks\Metadata\Driver\ReflectionMetadataDriver;
+use Alks\Metadata\Metadata\ClassMetadata;
+use Alks\Metadata\Metadata\MethodMetadata;
+use Alks\Metadata\Metadata\PropertyMetadata;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\FileCacheReader;
 use Psr\SimpleCache\CacheInterface;
@@ -60,10 +60,9 @@ class MetadataDriver implements MetadataDriverInterface
      * @param MetadataDriverInterface[] $drivers
      * @param CacheInterface $cache
      */
-    public function __construct(array $drivers=[], CacheInterface $cache=null)
+    public function __construct(array $drivers = [], CacheInterface $cache = null)
     {
-        foreach($drivers as $driver)
-        {
+        foreach ($drivers as $driver) {
             $this->register($driver);
         }
         $this->cache = $cache === null ? new ChainedCache() : $cache;
@@ -78,8 +77,7 @@ class MetadataDriver implements MetadataDriverInterface
     public function register(MetadataDriverInterface $metadataDriver)
     {
         $key = get_class($metadataDriver);
-        if(!isset($this->registeredDrivers[$key]))
-        {
+        if (!isset($this->registeredDrivers[$key])) {
             $this->drivers[] = $metadataDriver;
             $this->registeredDrivers[$key] = true;
         }
@@ -96,100 +94,30 @@ class MetadataDriver implements MetadataDriverInterface
      */
     public function getClassMetadata(\ReflectionClass $class): ?ClassMetadata
     {
-        $cachedKey = 'class.'.$this->cachedClassName($class->getName());
+        $cachedKey = 'class.' . $this->cachedClassName($class->getName());
         $cached = $this->pullFromCache($cachedKey);
-        if($cached !== null)
-        {
+        if ($cached !== null) {
             return $cached;
         }
-        foreach($this->getDrivers() as $metadataDriver)
-        {
+        foreach ($this->getDrivers() as $metadataDriver) {
             $classMetadata = $metadataDriver->getClassMetadata($class);
-            if($classMetadata !== null)
-            {
-                $this->cache($cachedKey,$classMetadata);
+            if ($classMetadata !== null) {
+                $this->cache($cachedKey, $classMetadata);
                 return $classMetadata;
             }
         }
-        throw new \RuntimeException('Cannot generate class metadata for '.$class->getName().' with the registered drivers');
+        throw new \RuntimeException('Cannot generate class metadata for ' . $class->getName() . ' with the registered drivers');
     }
 
     /**
-     * Generates the property metadata from a reflection property
+     * Generates a "safe to cache" key from a class name
      *
-     * @param \ReflectionProperty $property
-     * @return PropertyMetadata|null
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \RuntimeException
+     * @param string $className
+     * @return string
      */
-    public function getPropertyMetadata(\ReflectionProperty $property): ?PropertyMetadata
+    private function cachedClassName(string $className): string
     {
-        $cachedKey = 'property.'.$this->cachedClassName($property->getDeclaringClass()->getName()).'.'.$property->getName();
-        $cached = $this->pullFromCache($cachedKey);
-        if($cached !== null)
-        {
-            return $cached;
-        }
-        foreach($this->getDrivers() as $metadataDriver)
-        {
-            $propertyMetadata = $metadataDriver->getPropertyMetadata($property);
-            if($propertyMetadata !== null)
-            {
-                $this->cache($cachedKey,$propertyMetadata);
-                return $propertyMetadata;
-            }
-        }
-        throw new \RuntimeException('Cannot generate metadata for '.$property->getDeclaringClass()->getName().'::'.$property->getName().' with the registered drivers');
-    }
-
-    /**
-     * Generates the method metadata from a reflection method
-     *
-     * @param \ReflectionMethod $method
-     * @return MethodMetadata|null
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \RuntimeException
-     */
-    public function getMethodMetadata(\ReflectionMethod $method): ?MethodMetadata
-    {
-        $cachedKey = 'method.'.$this->cachedClassName($method->getDeclaringClass()->getName()).'.'.$method->getName();
-        $cached = $this->pullFromCache($cachedKey);
-        if($cached !== null)
-        {
-            return $cached;
-        }
-        foreach($this->getDrivers() as $metadataDriver)
-        {
-            $methodMetadata = $metadataDriver->getMethodMetadata($method);
-            if($methodMetadata !== null)
-            {
-                $this->cache($cachedKey,$methodMetadata);
-                return $methodMetadata;
-            }
-        }
-        throw new \RuntimeException('Cannot generate metadata for '.$method->getDeclaringClass()->getName().'::'.$method->getName().' with the registered drivers');
-    }
-
-    /**
-     * Registers or overrides the cache pool of the driver
-     *
-     * @param CacheInterface $cache
-     */
-    public function registerCache(CacheInterface $cache)
-    {
-        $this->cache = $cache;
-    }
-
-    /**
-     * Caches an item in all regitered cache pools
-     *
-     * @param $key
-     * @param $item
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
-    protected function cache($key, $item)
-    {
-        $this->cache->set($key, $item);
+        return str_replace('\\', '_', $className);
     }
 
     /**
@@ -205,28 +133,106 @@ class MetadataDriver implements MetadataDriverInterface
     }
 
     /**
-     * Generates a "safe to cache" key from a class name
+     * Returns the registered drivers or initializes the component with the default ReflectionMetadataDriver
      *
-     * @param string $className
-     * @return string
+     * @return MetadataDriverInterface[]
      */
-    private function cachedClassName(string $className): string
+    public function getDrivers()
     {
-        return str_replace('\\','_',$className);
+        if (!$this->isInitialized) {
+            $this->isInitialized = true;
+            if (count($this->drivers) === 0) {
+                $this->register(
+                    new ReflectionMetadataDriver()
+                );
+            }
+        }
+        return $this->drivers;
+    }
+
+    /**
+     * Caches an item in all regitered cache pools
+     *
+     * @param $key
+     * @param $item
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    protected function cache($key, $item)
+    {
+        $this->cache->set($key, $item);
+    }
+
+    /**
+     * Generates the property metadata from a reflection property
+     *
+     * @param \ReflectionProperty $property
+     * @return PropertyMetadata|null
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \RuntimeException
+     */
+    public function getPropertyMetadata(\ReflectionProperty $property): ?PropertyMetadata
+    {
+        $cachedKey = 'property.' . $this->cachedClassName($property->getDeclaringClass()->getName()) . '.' . $property->getName();
+        $cached = $this->pullFromCache($cachedKey);
+        if ($cached !== null) {
+            return $cached;
+        }
+        foreach ($this->getDrivers() as $metadataDriver) {
+            $propertyMetadata = $metadataDriver->getPropertyMetadata($property);
+            if ($propertyMetadata !== null) {
+                $this->cache($cachedKey, $propertyMetadata);
+                return $propertyMetadata;
+            }
+        }
+        throw new \RuntimeException('Cannot generate metadata for ' . $property->getDeclaringClass()->getName() . '::' . $property->getName() . ' with the registered drivers');
+    }
+
+    /**
+     * Generates the method metadata from a reflection method
+     *
+     * @param \ReflectionMethod $method
+     * @return MethodMetadata|null
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \RuntimeException
+     */
+    public function getMethodMetadata(\ReflectionMethod $method): ?MethodMetadata
+    {
+        $cachedKey = 'method.' . $this->cachedClassName($method->getDeclaringClass()->getName()) . '.' . $method->getName();
+        $cached = $this->pullFromCache($cachedKey);
+        if ($cached !== null) {
+            return $cached;
+        }
+        foreach ($this->getDrivers() as $metadataDriver) {
+            $methodMetadata = $metadataDriver->getMethodMetadata($method);
+            if ($methodMetadata !== null) {
+                $this->cache($cachedKey, $methodMetadata);
+                return $methodMetadata;
+            }
+        }
+        throw new \RuntimeException('Cannot generate metadata for ' . $method->getDeclaringClass()->getName() . '::' . $method->getName() . ' with the registered drivers');
+    }
+
+    /**
+     * Registers or overrides the cache pool of the driver
+     *
+     * @param CacheInterface $cache
+     */
+    public function registerCache(CacheInterface $cache)
+    {
+        $this->cache = $cache;
     }
 
     /**
      * Enables the annotation metadata driver with default configuration. If the cacheDir is defined the directory would
      * be used for annotation cache
      *
-     * @todo FileCacheReader is deprecated remove before upgrading the doctrine annotations
      * @param null $cacheDir
      * @throws \Doctrine\Common\Annotations\AnnotationException
+     * @todo FileCacheReader is deprecated remove before upgrading the doctrine annotations
      */
-    public function enableAnnotations($cacheDir=null)
+    public function enableAnnotations($cacheDir = null)
     {
-        if($cacheDir === null)
-        {
+        if ($cacheDir === null) {
             $this->register(new AnnotationMetadataMetadataDriver(
                 new AnnotationReader()
             ));
@@ -234,28 +240,8 @@ class MetadataDriver implements MetadataDriverInterface
         }
         $this->register(new AnnotationMetadataMetadataDriver(
             new FileCacheReader(
-                new AnnotationReader(),$cacheDir
+                new AnnotationReader(), $cacheDir
             )
         ));
-    }
-
-    /**
-     * Returns the registered drivers or initializes the component with the default ReflectionMetadataDriver
-     *
-     * @return MetadataDriverInterface[]
-     */
-    public function getDrivers()
-    {
-        if(!$this->isInitialized)
-        {
-            $this->isInitialized = true;
-            if(count($this->drivers) === 0)
-            {
-                $this->register(
-                    new ReflectionMetadataDriver()
-                );
-            }
-        }
-        return $this->drivers;
     }
 }

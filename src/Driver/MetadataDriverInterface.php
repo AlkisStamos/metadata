@@ -6,10 +6,11 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Driver;
-use AlkisStamos\Metadata\Metadata\ClassMetadata;
-use AlkisStamos\Metadata\Metadata\MethodMetadata;
-use AlkisStamos\Metadata\Metadata\PropertyMetadata;
+namespace Alks\Metadata\Driver;
+
+use Alks\Metadata\Metadata\ClassMetadata;
+use Alks\Metadata\Metadata\MethodMetadata;
+use Alks\Metadata\Metadata\PropertyMetadata;
 
 /**
  * @package Metadata

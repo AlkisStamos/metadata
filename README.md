@@ -3,7 +3,7 @@ Provides metadata for PHP classes and their members using a collection of metada
 
 ## Installation
 ```bash
-composer require alkis-stamos/metadata
+composer require alks/metadata
 ```
 ## Usage
 The library comes with 3 metadata driver implementations.
@@ -17,8 +17,8 @@ to use:
 ```php
 <?php
 require_once 'vendor/autoload.php';
-$driver = new \AlkisStamos\Metadata\MetadataDriver();
-$driver->register(new \AlkisStamos\Metadata\Driver\DocCommentDriver());
+$driver = new \Alks\Metadata\MetadataDriver();
+$driver->register(new \Alks\Metadata\Driver\DocCommentDriver());
 ```
 If you want to get the full use out of the library just call the enableAnnotations method. This will register the 
 Annoation metadata driver which makes use of all the installed drivers behaviour (remember to register the autoloader
@@ -26,7 +26,7 @@ in the driver registry):
 ```php
 <?php
 require_once 'vendor/autoload.php';
-$driver = new \AlkisStamos\Metadata\MetadataDriver();
+$driver = new \Alks\Metadata\MetadataDriver();
 $driver->enableAnnotations(__DIR__.'/var');//extra parameter to cache the doctrine annotation separately
 ```
 Anyway, once you have the driver in place get the metadata like this:
@@ -34,8 +34,8 @@ Anyway, once you have the driver in place get the metadata like this:
 <?php
 class ThisIsTheTargetClass {}
 // Composer and stuff..
-$driver = new \AlkisStamos\Metadata\MetadataDriver();
+$driver = new \Alks\Metadata\MetadataDriver();
 // Register (or enable) all drivers..
-/** @var \AlkisStamos\Metadata\Metadata\ClassMetadata $metadata */
+/** @var \Alks\Metadata\Metadata\ClassMetadata $metadata */
 $metadata = $driver->getClassMetadata(new ReflectionClass(ThisIsTheTargetClass::class));
 ```

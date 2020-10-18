@@ -5,8 +5,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace AlkisStamos\Metadata\Annotation;
-use AlkisStamos\Metadata\Metadata\AbstractMetadata;
+
+namespace Alks\Metadata\Annotation;
+
+use Alks\Metadata\Metadata\AbstractMetadata;
 
 /**
  * @package Metadata
@@ -24,12 +26,10 @@ abstract class Annotation extends AbstractMetadata
      * Annotation constructor.
      * @param array $data
      */
-    public function __construct(array $data=[])
+    public function __construct(array $data = [])
     {
-        foreach($data as $key=>$value)
-        {
-            if(!property_exists($this,$key))
-            {
+        foreach ($data as $key => $value) {
+            if (!property_exists($this, $key)) {
                 throw new \BadMethodCallException(sprintf('Unknown property "%s" on annotation "%s".', $key, get_class($this)));
             }
             $this->{$key} = $value;

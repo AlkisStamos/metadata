@@ -6,13 +6,12 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Tests\Driver;
+namespace Alks\Metadata\Tests\Driver;
 
-use AlkisStamos\Metadata\Annotation\Annotation;
-use AlkisStamos\Metadata\Annotation\Property;
-use AlkisStamos\Metadata\Driver\AnnotationMetadataMetadataDriver;
-use AlkisStamos\Metadata\Metadata\ClassMetadata;
-use AlkisStamos\Metadata\MetadataDriver;
+use Alks\Metadata\Annotation\Annotation;
+use Alks\Metadata\Annotation\Property;
+use Alks\Metadata\Driver\AnnotationMetadataMetadataDriver;
+use Alks\Metadata\Metadata\ClassMetadata;
 use Doctrine\Common\Annotations\Reader;
 use PHPUnit\Framework\TestCase;
 
@@ -28,10 +27,10 @@ class AnnotationMetadataDriverTest extends TestCase
             ->willReturn([]);
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $class = $driver->getClassMetadata(new \ReflectionClass(MockClass::class));
-        $this->assertInstanceOf(ClassMetadata::class,$class);
-        $this->assertSame(MockClass::class,$class->name);
-        $this->assertArrayHasKey('path',$class->fileProperties);
-        $this->assertSame(__FILE__,$class->fileProperties['path']);
+        $this->assertInstanceOf(ClassMetadata::class, $class);
+        $this->assertSame(MockClass::class, $class->name);
+        $this->assertArrayHasKey('path', $class->fileProperties);
+        $this->assertSame(__FILE__, $class->fileProperties['path']);
         $this->assertEmpty($class->properties);
         $this->assertEmpty($class->metadata);
         $this->assertEmpty($class->methods);
@@ -48,9 +47,9 @@ class AnnotationMetadataDriverTest extends TestCase
             ]);
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $class = $driver->getClassMetadata(new \ReflectionClass(MockClass::class));
-        $this->assertArrayHasKey(get_class($annotation),$class->metadata);
+        $this->assertArrayHasKey(get_class($annotation), $class->metadata);
         $this->assertArrayHasKey(0, $class->metadata[get_class($annotation)]);
-        $this->assertSame($annotation,$class->metadata[get_class($annotation)][0]);
+        $this->assertSame($annotation, $class->metadata[get_class($annotation)][0]);
     }
 
     public function testGetClassMetadataFromCache()
@@ -64,10 +63,10 @@ class AnnotationMetadataDriverTest extends TestCase
             ->willReturn([$annotation]);
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $class = $driver->getClassMetadata($reflection);
-        $this->assertSame($annotation,$class->metadata[get_class($annotation)][0]);
+        $this->assertSame($annotation, $class->metadata[get_class($annotation)][0]);
         $class2 = $driver->getClassMetadata(new \ReflectionClass(MockClass::class));
-        $this->assertSame($class,$class2);
-        $this->assertSame($annotation,$class2->metadata[get_class($annotation)][0]);
+        $this->assertSame($class, $class2);
+        $this->assertSame($annotation, $class2->metadata[get_class($annotation)][0]);
     }
 
     public function testGetClassMembersMetadataWithoutAnnotations()
@@ -88,11 +87,11 @@ class AnnotationMetadataDriverTest extends TestCase
         $this->assertInstanceOf(ClassMetadata::class, $classMetadata);
         $this->assertSame(1, count($classMetadata->properties));
         $this->assertSame(1, count($classMetadata->methods));
-        $this->assertArrayHasKey('method',$classMetadata->methods);
-        $this->assertSame('double',$classMetadata->methods['method']->returnType->name);
+        $this->assertArrayHasKey('method', $classMetadata->methods);
+        $this->assertSame('double', $classMetadata->methods['method']->returnType->name);
         $this->assertTrue($classMetadata->methods['method']->returnType->isArray);
         $this->assertArrayHasKey('property', $classMetadata->properties);
-        $this->assertSame('integer',$classMetadata->properties['property']->type->name);
+        $this->assertSame('integer', $classMetadata->properties['property']->type->name);
     }
 
     /** Method metadata tests */
@@ -103,7 +102,7 @@ class AnnotationMetadataDriverTest extends TestCase
         $reader->expects($this->once())
             ->method('getMethodAnnotations')
             ->willReturn([]);
-        $reflection = new \ReflectionMethod(MockClassWithMethods::class,'method1');
+        $reflection = new \ReflectionMethod(MockClassWithMethods::class, 'method1');
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $methodMetadata = $driver->getMethodMetadata($reflection);
         $this->assertSame($methodMetadata->name, 'method1');
@@ -118,7 +117,7 @@ class AnnotationMetadataDriverTest extends TestCase
         $reader->expects($this->once())
             ->method('getMethodAnnotations')
             ->willReturn([]);
-        $reflection = new \ReflectionMethod(MockClassWithMethods::class,'method2');
+        $reflection = new \ReflectionMethod(MockClassWithMethods::class, 'method2');
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $methodMetadata = $driver->getMethodMetadata($reflection);
         $this->assertSame($methodMetadata->name, 'method2');
@@ -133,7 +132,7 @@ class AnnotationMetadataDriverTest extends TestCase
         $reader->expects($this->once())
             ->method('getMethodAnnotations')
             ->willReturn([]);
-        $reflection = new \ReflectionMethod(MockClassWithMethods::class,'method3');
+        $reflection = new \ReflectionMethod(MockClassWithMethods::class, 'method3');
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $methodMetadata = $driver->getMethodMetadata($reflection);
         $this->assertSame($methodMetadata->name, 'method3');
@@ -150,7 +149,7 @@ class AnnotationMetadataDriverTest extends TestCase
         $reader->expects($this->once())
             ->method('getMethodAnnotations')
             ->willReturn([]);
-        $reflection = new \ReflectionMethod(MockClassWithMethods::class,'method4');
+        $reflection = new \ReflectionMethod(MockClassWithMethods::class, 'method4');
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $methodMetadata = $driver->getMethodMetadata($reflection);
         $this->assertSame($methodMetadata->name, 'method4');
@@ -174,7 +173,7 @@ class AnnotationMetadataDriverTest extends TestCase
             ->willReturn([
                 $annotation1, $annotation2
             ]);
-        $reflection = new \ReflectionMethod(MockClassWithMethods::class,'method1');
+        $reflection = new \ReflectionMethod(MockClassWithMethods::class, 'method1');
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $methodMetadata = $driver->getMethodMetadata($reflection);
         $this->assertSame($methodMetadata->name, 'method1');
@@ -192,13 +191,13 @@ class AnnotationMetadataDriverTest extends TestCase
         $reader->expects($this->once())
             ->method('getPropertyAnnotations')
             ->willReturn([]);
-        $reflection = new \ReflectionProperty(MockClassWithProperties::class,'property1');
+        $reflection = new \ReflectionProperty(MockClassWithProperties::class, 'property1');
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $property = $driver->getPropertyMetadata($reflection);
-        $this->assertSame('property1',$property->name);
+        $this->assertSame('property1', $property->name);
         $this->assertNull($property->setter);
-        $this->assertSame('private',$property->access);
-        $this->assertSame('mixed',$property->type->name);
+        $this->assertSame('private', $property->access);
+        $this->assertSame('mixed', $property->type->name);
     }
 
     public function testGetPropertyMetadataWithDocBlockType()
@@ -207,13 +206,13 @@ class AnnotationMetadataDriverTest extends TestCase
         $reader->expects($this->once())
             ->method('getPropertyAnnotations')
             ->willReturn([]);
-        $reflection = new \ReflectionProperty(MockClassWithProperties::class,'property2');
+        $reflection = new \ReflectionProperty(MockClassWithProperties::class, 'property2');
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $property = $driver->getPropertyMetadata($reflection);
-        $this->assertSame('property2',$property->name);
+        $this->assertSame('property2', $property->name);
         $this->assertNull($property->setter);
-        $this->assertSame('protected',$property->access);
-        $this->assertSame('int',$property->type->name);
+        $this->assertSame('protected', $property->access);
+        $this->assertSame('int', $property->type->name);
     }
 
     public function testGetPropertyMetadataWithCustomAnnotation()
@@ -235,19 +234,19 @@ class AnnotationMetadataDriverTest extends TestCase
         $reader->expects($this->once())
             ->method('getPropertyAnnotations')
             ->willReturn([$annotation]);
-        $reflection = new \ReflectionProperty(MockClassWithProperties::class,'property3');
+        $reflection = new \ReflectionProperty(MockClassWithProperties::class, 'property3');
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $property = $driver->getPropertyMetadata($reflection);
-        $this->assertSame('property3',$property->name);
-        $this->assertSame('protected',$property->access);
+        $this->assertSame('property3', $property->name);
+        $this->assertSame('protected', $property->access);
         $key = get_class($annotation);
-        $this->assertArrayHasKey($key,$property->metadata);
-        $this->assertSame($annotation,$property->metadata[$key][0]);
+        $this->assertArrayHasKey($key, $property->metadata);
+        $this->assertSame($annotation, $property->metadata[$key][0]);
         $this->assertSame('string', $property->type->name);
         $this->assertTrue($property->type->isArray);
-        $this->assertSame('setter',$property->setter);
-        $this->assertSame('getter',$property->getter);
-        $this->assertSame('custom-format',$property->type->format);
+        $this->assertSame('setter', $property->setter);
+        $this->assertSame('getter', $property->getter);
+        $this->assertSame('custom-format', $property->type->format);
     }
 
     public function testGetPropertyMetadataWithNoTypeAnnotation()
@@ -257,14 +256,14 @@ class AnnotationMetadataDriverTest extends TestCase
         $reader->expects($this->once())
             ->method('getPropertyAnnotations')
             ->willReturn([$annotation]);
-        $reflection = new \ReflectionProperty(MockClassWithProperties::class,'property3');
+        $reflection = new \ReflectionProperty(MockClassWithProperties::class, 'property3');
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $property = $driver->getPropertyMetadata($reflection);
-        $this->assertSame('property3',$property->name);
-        $this->assertSame('protected',$property->access);
+        $this->assertSame('property3', $property->name);
+        $this->assertSame('protected', $property->access);
         $key = get_class($annotation);
-        $this->assertArrayHasKey($key,$property->metadata);
-        $this->assertSame($annotation,$property->metadata[$key][0]);
+        $this->assertArrayHasKey($key, $property->metadata);
+        $this->assertSame($annotation, $property->metadata[$key][0]);
         $this->assertSame('bool', $property->type->name);
     }
 
@@ -278,18 +277,18 @@ class AnnotationMetadataDriverTest extends TestCase
         $reader->expects($this->once())
             ->method('getPropertyAnnotations')
             ->willReturn([$annotation]);
-        $reflection = new \ReflectionProperty(MockClassWithProperties::class,'property4');
+        $reflection = new \ReflectionProperty(MockClassWithProperties::class, 'property4');
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $property = $driver->getPropertyMetadata($reflection);
-        $this->assertSame('property4',$property->name);
-        $this->assertSame('protected',$property->access);
+        $this->assertSame('property4', $property->name);
+        $this->assertSame('protected', $property->access);
         $key = get_class($annotation);
-        $this->assertArrayHasKey($key,$property->metadata);
-        $this->assertSame($annotation,$property->metadata[$key][0]);
+        $this->assertArrayHasKey($key, $property->metadata);
+        $this->assertSame($annotation, $property->metadata[$key][0]);
         $this->assertNotNull($property->type);
         $key = get_class($annotation);
-        $this->assertArrayHasKey($key,$property->metadata);
-        $this->assertSame($annotation,$property->metadata[$key][0]);
+        $this->assertArrayHasKey($key, $property->metadata);
+        $this->assertSame($annotation, $property->metadata[$key][0]);
         $this->assertSame('mixed', $property->type->name);
     }
 
@@ -299,14 +298,14 @@ class AnnotationMetadataDriverTest extends TestCase
         $reader->expects($this->once())
             ->method('getPropertyAnnotations')
             ->willReturn([]);
-        $reflection = new \ReflectionProperty(MockClassWithProperties::class,'property5');
+        $reflection = new \ReflectionProperty(MockClassWithProperties::class, 'property5');
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $property = $driver->getPropertyMetadata($reflection);
-        $this->assertSame('property5',$property->name);
+        $this->assertSame('property5', $property->name);
         $this->assertNull($property->setter);
-        $this->assertSame('protected',$property->access);
+        $this->assertSame('protected', $property->access);
         $typeName = $property->type;
-        $this->assertSame('string',"$typeName");
+        $this->assertSame('string', "$typeName");
     }
 
     public function testGetClassMetadataWithSettersAndGetters()
@@ -318,7 +317,7 @@ class AnnotationMetadataDriverTest extends TestCase
         $reader = $this->createMock(Reader::class);
         $reader->expects($this->exactly(2))
             ->method('getPropertyAnnotations')
-            ->will($this->onConsecutiveCalls([],[$propertyAnnotation]));
+            ->will($this->onConsecutiveCalls([], [$propertyAnnotation]));
         $reader->expects($this->exactly(4))
             ->method('getMethodAnnotations')
             ->willReturn([]);
@@ -327,27 +326,34 @@ class AnnotationMetadataDriverTest extends TestCase
             ->willReturn([]);
         $driver = new AnnotationMetadataMetadataDriver($reader);
         $classMetadata = $driver->getClassMetadata(new \ReflectionClass(MockClassWithGettersAndSetters::class));
-        $this->assertEquals(2,count($classMetadata->properties));
-        $this->assertArrayHasKey('prop1',$classMetadata->properties);
-        $this->assertArrayHasKey('prop2',$classMetadata->properties);
-        $this->assertEquals('getProp1',$classMetadata->properties['prop1']->getter);
-        $this->assertEquals('setProp1',$classMetadata->properties['prop1']->setter);
-        $this->assertEquals('getProp2',$classMetadata->properties['prop2']->getter);
-        $this->assertEquals('custom_setter',$classMetadata->properties['prop2']->setter);
+        $this->assertEquals(2, count($classMetadata->properties));
+        $this->assertArrayHasKey('prop1', $classMetadata->properties);
+        $this->assertArrayHasKey('prop2', $classMetadata->properties);
+        $this->assertEquals('getProp1', $classMetadata->properties['prop1']->getter);
+        $this->assertEquals('setProp1', $classMetadata->properties['prop1']->setter);
+        $this->assertEquals('getProp2', $classMetadata->properties['prop2']->getter);
+        $this->assertEquals('custom_setter', $classMetadata->properties['prop2']->setter);
     }
 }
 
-class MockClass {}
+class MockClass
+{
+}
+
 class MockClassWithMethodsAndProperties
 {
     /** @var integer */
     protected $property;
+
     /** @return double[] */
-    protected function method() { return []; }
+    protected function method()
+    {
+        return [];
+    }
 }
+
 class MockClassWithProperties
 {
-    private $property1;
     /** @var int */
     protected $property2 = 1;
     /** @var bool */
@@ -356,21 +362,43 @@ class MockClassWithProperties
     protected $property4;
     /** @var string|bool[]|int|null */
     protected $property5;
+    private $property1;
 }
+
 class MockClassWithMethods
 {
-    public function __construct(){}
-    /** @return string */
-    protected function method1() { return ''; }
-    private function method2():int { return 0; }
-    public function method3(int $param): array { return []; }
+    public function __construct()
+    {
+    }
+
+    public function method3(int $param): array
+    {
+        return [];
+    }
+
     /**
      * @param boolean $param2
      * @return bool[]
      */
-    public function method4(bool $param1, $param2) { return []; }
+    public function method4(bool $param1, $param2)
+    {
+        return [];
+    }
+
+    /** @return string */
+    protected function method1()
+    {
+        return '';
+    }
+
+    private function method2(): int
+    {
+        return 0;
+    }
 }
-class MockClassWithGettersAndSetters{
+
+class MockClassWithGettersAndSetters
+{
     protected $prop1;
     protected $prop2;
 
@@ -406,4 +434,7 @@ class MockClassWithGettersAndSetters{
         $this->prop2 = $prop2;
     }
 }
-class CustomAnnotationForMethod extends Annotation {}
+
+class CustomAnnotationForMethod extends Annotation
+{
+}

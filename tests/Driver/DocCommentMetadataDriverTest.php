@@ -6,8 +6,9 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Tests\Driver;
-use AlkisStamos\Metadata\Driver\DocCommentMetadataDriver;
+namespace Alks\Metadata\Tests\Driver;
+
+use Alks\Metadata\Driver\DocCommentMetadataDriver;
 use PHPUnit\Framework\TestCase;
 
 class DocCommentMetadataDriverTest extends TestCase
@@ -21,7 +22,7 @@ class DocCommentMetadataDriverTest extends TestCase
         $method = $this->createMock(\ReflectionMethod::class);
         $method->expects($this->exactly(2))
             ->method('getParameters')
-            ->will($this->onConsecutiveCalls([],[$argument]));
+            ->will($this->onConsecutiveCalls([], [$argument]));
         $method->expects($this->once())
             ->method('getName')
             ->willReturn('methodName');
@@ -30,9 +31,9 @@ class DocCommentMetadataDriverTest extends TestCase
             ->willReturn(null);
         $driver = new DocCommentMetadataDriver();
         $methodMetadata = $driver->getMethodMetadata($method);
-        $this->assertEquals('methodName',$methodMetadata->name);
-        $this->assertEquals(1,count($methodMetadata->arguments));
-        $this->assertArrayHasKey('argumentName',$methodMetadata->arguments);
-        $this->assertEquals('argumentName',$methodMetadata->arguments['argumentName']->name);
+        $this->assertEquals('methodName', $methodMetadata->name);
+        $this->assertEquals(1, count($methodMetadata->arguments));
+        $this->assertArrayHasKey('argumentName', $methodMetadata->arguments);
+        $this->assertEquals('argumentName', $methodMetadata->arguments['argumentName']->name);
     }
 }

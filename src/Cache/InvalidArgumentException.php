@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Cache;
+namespace Alks\Metadata\Cache;
 /**
  * @package Metadata
  * @author Alkis Stamos <stamosalkis@gmail.com>
@@ -15,4 +15,6 @@ namespace AlkisStamos\Metadata\Cache;
  *
  * Implementation of the psr/simple-cache InvalidArgumentException interface
  */
-class InvalidArgumentException extends \InvalidArgumentException implements \Psr\SimpleCache\InvalidArgumentException {}
+class InvalidArgumentException extends \InvalidArgumentException implements \Psr\SimpleCache\InvalidArgumentException
+{
+}

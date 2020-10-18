@@ -6,13 +6,14 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Driver;
-use AlkisStamos\Metadata\Annotation\Annotation;
-use AlkisStamos\Metadata\Annotation\Property;
-use AlkisStamos\Metadata\Metadata\ClassMetadata;
-use AlkisStamos\Metadata\Metadata\MethodMetadata;
-use AlkisStamos\Metadata\Metadata\PropertyMetadata;
-use AlkisStamos\Metadata\Metadata\TypeMetadata;
+namespace Alks\Metadata\Driver;
+
+use Alks\Metadata\Annotation\Annotation;
+use Alks\Metadata\Annotation\Property;
+use Alks\Metadata\Metadata\ClassMetadata;
+use Alks\Metadata\Metadata\MethodMetadata;
+use Alks\Metadata\Metadata\PropertyMetadata;
+use Alks\Metadata\Metadata\TypeMetadata;
 use Doctrine\Common\Annotations\Reader;
 
 /**
@@ -56,16 +57,13 @@ class AnnotationMetadataMetadataDriver extends DocCommentMetadataDriver
      */
     public function getClassMetadata(\ReflectionClass $class): ?ClassMetadata
     {
-        if(isset($this->cache[$class->getName()]))
-        {
+        if (isset($this->cache[$class->getName()])) {
             return $this->cache[$class->getName()];
         }
         $classMetadata = parent::getClassMetadata($class);
         $annotations = $this->annotationReader->getClassAnnotations($class);
-        foreach($annotations as $annotation)
-        {
-            if($annotation instanceof Annotation)
-            {
+        foreach ($annotations as $annotation) {
+            if ($annotation instanceof Annotation) {
                 $classMetadata->addMetadata($annotation);
             }
         }
@@ -83,10 +81,8 @@ class AnnotationMetadataMetadataDriver extends DocCommentMetadataDriver
     {
         $methodMetadata = parent::getMethodMetadata($method);
         $annotations = $this->annotationReader->getMethodAnnotations($method);
-        foreach($annotations as $annotation)
-        {
-            if($annotation instanceof Annotation)
-            {
+        foreach ($annotations as $annotation) {
+            if ($annotation instanceof Annotation) {
                 $methodMetadata->addMetadata($annotation);
             }
         }
@@ -103,29 +99,23 @@ class AnnotationMetadataMetadataDriver extends DocCommentMetadataDriver
     {
         $propertyMetadata = parent::getPropertyMetadata($property);
         $annotations = $this->annotationReader->getPropertyAnnotations($property);
-        foreach($annotations as $annotation)
-        {
-            if($annotation instanceof Annotation)
-            {
+        foreach ($annotations as $annotation) {
+            if ($annotation instanceof Annotation) {
                 $propertyMetadata->addMetadata($annotation);
-                if($annotation instanceof Property)
-                {
+                if ($annotation instanceof Property) {
                     $propertyMetadata->setter = $annotation->getSetter();
                     $propertyMetadata->getter = $annotation->getGetter();
                     $type = $this->typeFromPropertyAnnotation($annotation);
-                    if($type !== null)
-                    {
+                    if ($type !== null) {
                         $propertyMetadata->type = $type;
                     }
-                    foreach($annotation->getAttrs() as $key=>$value)
-                    {
-                        $propertyMetadata->addAttr($key,$value);
+                    foreach ($annotation->getAttrs() as $key => $value) {
+                        $propertyMetadata->addAttr($key, $value);
                     }
                 }
             }
         }
-        if($propertyMetadata->type === null)
-        {
+        if ($propertyMetadata->type === null) {
             $propertyMetadata->type = TypeMetadata::mixedType();
         }
         return $propertyMetadata;
@@ -141,20 +131,16 @@ class AnnotationMetadataMetadataDriver extends DocCommentMetadataDriver
     protected function typeFromPropertyAnnotation(Property $property)
     {
         $typeName = $property->getType();
-        if($typeName === null)
-        {
+        if ($typeName === null) {
             return null;
         }
         $isArray = false;
-        if(self::isCollectionType($typeName,$typeName))
-        {
+        if (self::isCollectionType($typeName, $typeName)) {
             $isArray = true;
         }
         $isFlat = self::isSimpleType($typeName);
-        if(!$isFlat)
-        {
-            if(!class_exists($typeName))
-            {
+        if (!$isFlat) {
+            if (!class_exists($typeName)) {
                 return null;
             }
         }

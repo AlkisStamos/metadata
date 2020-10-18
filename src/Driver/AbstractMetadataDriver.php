@@ -6,9 +6,10 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Driver;
-use AlkisStamos\Metadata\Metadata\ClassMetadata;
-use AlkisStamos\Metadata\Metadata\PropertyMetadata;
+namespace Alks\Metadata\Driver;
+
+use Alks\Metadata\Metadata\ClassMetadata;
+use Alks\Metadata\Metadata\PropertyMetadata;
 
 /**
  * @package Metadata
@@ -31,25 +32,35 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
         $classMetadata = new ClassMetadata($className = $class->getName());
         $classMetadata->addFileProperty('path', $class->getFileName());
         $methods = $class->getMethods();
-        foreach($methods as $method)
-        {
+        foreach ($methods as $method) {
             $classMetadata->addMethodMetadata($this->getMethodMetadata($method));
         }
         $properties = $class->getProperties();
-        foreach($properties as $property)
-        {
+        foreach ($properties as $property) {
             $propertyMetadata = $this->getPropertyMetadata($property);
-            if($propertyMetadata->getter === null)
-            {
+            if ($propertyMetadata->getter === null) {
                 $propertyMetadata->getter = $this->getPropertyMethodName($classMetadata, $propertyMetadata);
             }
-            if($propertyMetadata->setter === null)
-            {
+            if ($propertyMetadata->setter === null) {
                 $propertyMetadata->setter = $this->getPropertyMethodName($classMetadata, $propertyMetadata, 'set');
             }
             $classMetadata->addPropertyMetadata($propertyMetadata);
         }
         return $classMetadata;
+    }
+
+    /**
+     * Returns the setter or getter for the property
+     *
+     * @param ClassMetadata $classMetadata
+     * @param PropertyMetadata $propertyMetadata
+     * @param string $prefix
+     * @return null|string
+     */
+    protected function getPropertyMethodName(ClassMetadata $classMetadata, PropertyMetadata $propertyMetadata, $prefix = 'get'): ?string
+    {
+        $methodName = $prefix . ucfirst($propertyMetadata->name);
+        return isset($classMetadata->methods[$methodName]) ? $methodName : null;
     }
 
     /**
@@ -60,18 +71,27 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
      */
     protected function resolveAccess($reflection)
     {
-        if($reflection instanceof \ReflectionProperty || $reflection instanceof \ReflectionMethod)
-        {
-            if($reflection->isPrivate())
-            {
+        if ($reflection instanceof \ReflectionProperty || $reflection instanceof \ReflectionMethod) {
+            if ($reflection->isPrivate()) {
                 return 'private';
             }
-            if($reflection->isProtected())
-            {
+            if ($reflection->isProtected()) {
                 return 'protected';
             }
         }
         return 'public';
+    }
+
+    /**
+     * Checks if the given type is a "simple type", refering to PHPs built in types
+     *
+     * @param string $type type name from gettype()
+     * @return bool
+     */
+    protected function isSimpleType($type)
+    {
+        return self::isFlatType($type)
+            || $type == 'array' || $type == 'object';
     }
 
     /**
@@ -90,18 +110,6 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
     }
 
     /**
-     * Checks if the given type is a "simple type", refering to PHPs built in types
-     *
-     * @param string $type type name from gettype()
-     * @return bool
-     */
-    protected function isSimpleType($type)
-    {
-        return self::isFlatType($type)
-            || $type == 'array' || $type == 'object';
-    }
-
-    /**
      * Returns true if type is an array of elements. If so the reference $realType will have the value of the real type
      * name (eg string[] => true, 'string')
      *
@@ -111,26 +119,11 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
      */
     protected function isCollectionType($type, &$realType)
     {
-        if(substr($type, -2) === '[]')
-        {
-            $realType = substr($type,0, -2);
+        if (substr($type, -2) === '[]') {
+            $realType = substr($type, 0, -2);
             return true;
         }
         $realType = $type;
         return false;
-    }
-
-    /**
-     * Returns the setter or getter for the property
-     *
-     * @param ClassMetadata $classMetadata
-     * @param PropertyMetadata $propertyMetadata
-     * @param string $prefix
-     * @return null|string
-     */
-    protected function getPropertyMethodName(ClassMetadata $classMetadata, PropertyMetadata $propertyMetadata, $prefix='get'): ?string
-    {
-        $methodName = $prefix.ucfirst($propertyMetadata->name);
-        return isset($classMetadata->methods[$methodName]) ? $methodName : null;
     }
 }

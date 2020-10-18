@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Cache;
+namespace Alks\Metadata\Cache;
 /**
  * @package Metadata
  * @author Alkis Stamos <stamosalkis@gmail.com>
@@ -24,64 +24,6 @@ class InMemoryCache extends AbstractCache
      * @var array
      */
     protected $cache = [];
-
-    /**
-     * Fetches a value from the cache.
-     *
-     * @param string $key The unique key of this item in the cache.
-     * @param mixed $default Default value to return if the key does not exist.
-     *
-     * @return mixed The value of the item from the cache, or $default in case of cache miss.
-     *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if the $key string is not a legal value.
-     */
-    public function get($key, $default = null)
-    {
-        $this->validateKey($key);
-        return $this->has($key) ? $this->cache[$key] : $default;
-    }
-
-    /**
-     * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time.
-     *
-     * @param string $key The key of the item to store.
-     * @param mixed $value The value of the item to store, must be serializable.
-     * @param null|int|\DateInterval $ttl Optional. The TTL value of this item. If no value is sent and
-     *                                      the driver supports TTL then the library may set a default value
-     *                                      for it or let the driver take care of that.
-     *
-     * @return bool True on success and false on failure.
-     *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if the $key string is not a legal value.
-     */
-    public function set($key, $value, $ttl = null)
-    {
-        $this->validateKey($key);
-        $this->cache[$key] = $value;
-        return true;
-    }
-
-    /**
-     * Delete an item from the cache by its unique key.
-     *
-     * @param string $key The unique cache key of the item to delete.
-     *
-     * @return bool True if the item was successfully removed. False if there was an error.
-     *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if the $key string is not a legal value.
-     */
-    public function delete($key)
-    {
-        $this->validateKey($key);
-        if($this->has($key))
-        {
-            unset($this->cache[$key]);
-        }
-        return true;
-    }
 
     /**
      * Wipes clean the entire cache's keys.
@@ -108,53 +50,26 @@ class InMemoryCache extends AbstractCache
      */
     public function getMultiple($keys, $default = null)
     {
-        foreach($keys as $key)
-        {
-            yield $this->get($key,$default);
+        foreach ($keys as $key) {
+            yield $this->get($key, $default);
         }
     }
 
     /**
-     * Persists a set of key => value pairs in the cache, with an optional TTL.
+     * Fetches a value from the cache.
      *
-     * @param iterable $values A list of key => value pairs for a multiple-set operation.
-     * @param null|int|\DateInterval $ttl Optional. The TTL value of this item. If no value is sent and
-     *                                       the driver supports TTL then the library may set a default value
-     *                                       for it or let the driver take care of that.
+     * @param string $key The unique key of this item in the cache.
+     * @param mixed $default Default value to return if the key does not exist.
      *
-     * @return bool True on success and false on failure.
+     * @return mixed The value of the item from the cache, or $default in case of cache miss.
      *
      * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if $values is neither an array nor a Traversable,
-     *   or if any of the $values are not a legal value.
+     *   MUST be thrown if the $key string is not a legal value.
      */
-    public function setMultiple($values, $ttl = null)
+    public function get($key, $default = null)
     {
-        foreach($values as $key=>$value)
-        {
-            $this->set($key,$value,$ttl);
-        }
-        return true;
-    }
-
-    /**
-     * Deletes multiple cache items in a single operation.
-     *
-     * @param iterable $keys A list of string-based keys to be deleted.
-     *
-     * @return bool True if the items were successfully removed. False if there was an error.
-     *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if $keys is neither an array nor a Traversable,
-     *   or if any of the $keys are not a legal value.
-     */
-    public function deleteMultiple($keys)
-    {
-        foreach($keys as $key)
-        {
-            $this->delete($key);
-        }
-        return true;
+        $this->validateKey($key);
+        return $this->has($key) ? $this->cache[$key] : $default;
     }
 
     /**
@@ -175,6 +90,87 @@ class InMemoryCache extends AbstractCache
     public function has($key)
     {
         $this->validateKey($key);
-        return array_key_exists($key,$this->cache);
+        return array_key_exists($key, $this->cache);
+    }
+
+    /**
+     * Persists a set of key => value pairs in the cache, with an optional TTL.
+     *
+     * @param iterable $values A list of key => value pairs for a multiple-set operation.
+     * @param null|int|\DateInterval $ttl Optional. The TTL value of this item. If no value is sent and
+     *                                       the driver supports TTL then the library may set a default value
+     *                                       for it or let the driver take care of that.
+     *
+     * @return bool True on success and false on failure.
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     *   MUST be thrown if $values is neither an array nor a Traversable,
+     *   or if any of the $values are not a legal value.
+     */
+    public function setMultiple($values, $ttl = null)
+    {
+        foreach ($values as $key => $value) {
+            $this->set($key, $value, $ttl);
+        }
+        return true;
+    }
+
+    /**
+     * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time.
+     *
+     * @param string $key The key of the item to store.
+     * @param mixed $value The value of the item to store, must be serializable.
+     * @param null|int|\DateInterval $ttl Optional. The TTL value of this item. If no value is sent and
+     *                                      the driver supports TTL then the library may set a default value
+     *                                      for it or let the driver take care of that.
+     *
+     * @return bool True on success and false on failure.
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     *   MUST be thrown if the $key string is not a legal value.
+     */
+    public function set($key, $value, $ttl = null)
+    {
+        $this->validateKey($key);
+        $this->cache[$key] = $value;
+        return true;
+    }
+
+    /**
+     * Deletes multiple cache items in a single operation.
+     *
+     * @param iterable $keys A list of string-based keys to be deleted.
+     *
+     * @return bool True if the items were successfully removed. False if there was an error.
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     *   MUST be thrown if $keys is neither an array nor a Traversable,
+     *   or if any of the $keys are not a legal value.
+     */
+    public function deleteMultiple($keys)
+    {
+        foreach ($keys as $key) {
+            $this->delete($key);
+        }
+        return true;
+    }
+
+    /**
+     * Delete an item from the cache by its unique key.
+     *
+     * @param string $key The unique cache key of the item to delete.
+     *
+     * @return bool True if the item was successfully removed. False if there was an error.
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     *   MUST be thrown if the $key string is not a legal value.
+     */
+    public function delete($key)
+    {
+        $this->validateKey($key);
+        if ($this->has($key)) {
+            unset($this->cache[$key]);
+        }
+        return true;
     }
 }

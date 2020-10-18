@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Metadata;
+namespace Alks\Metadata\Metadata;
 /**
  * @package Metadata
  * @author Alkis Stamos <stamosalkis@gmail.com>

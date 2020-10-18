@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Metadata;
+namespace Alks\Metadata\Metadata;
 /**
  * @package Metadata
  * @author Alkis Stamos <stamosalkis@gmail.com>
@@ -15,4 +15,6 @@ namespace AlkisStamos\Metadata\Metadata;
  *
  * Base metadata class for annotation or other metadata sources, to avoid parsing third party info
  */
-abstract class AbstractMetadata {}
+abstract class AbstractMetadata
+{
+}

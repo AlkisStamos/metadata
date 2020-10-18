@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Annotation;
+namespace Alks\Metadata\Annotation;
 /**
  * @package Metadata
  * @author Alkis Stamos <stamosalkis@gmail.com>
@@ -26,7 +26,7 @@ class Property extends Annotation
      */
     protected $type = null;
     /**
-     * If the property allowes null values
+     * If the property can be null
      *
      * @var bool
      */
@@ -64,8 +64,7 @@ class Property extends Annotation
      */
     public function __construct(array $data)
     {
-        if(isset($data['value']))
-        {
+        if (isset($data['value'])) {
             $this->type = $data['value'];
             unset($data['value']);
         }

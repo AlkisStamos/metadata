@@ -6,14 +6,15 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Tests;
-use AlkisStamos\Metadata\Driver\AnnotationMetadataMetadataDriver;
-use AlkisStamos\Metadata\Driver\MetadataDriverInterface;
-use AlkisStamos\Metadata\Driver\ReflectionMetadataDriver;
-use AlkisStamos\Metadata\Metadata\ClassMetadata;
-use AlkisStamos\Metadata\Metadata\MethodMetadata;
-use AlkisStamos\Metadata\Metadata\PropertyMetadata;
-use AlkisStamos\Metadata\MetadataDriver;
+namespace Alks\Metadata\Tests;
+
+use Alks\Metadata\Driver\AnnotationMetadataMetadataDriver;
+use Alks\Metadata\Driver\MetadataDriverInterface;
+use Alks\Metadata\Driver\ReflectionMetadataDriver;
+use Alks\Metadata\Metadata\ClassMetadata;
+use Alks\Metadata\Metadata\MethodMetadata;
+use Alks\Metadata\Metadata\PropertyMetadata;
+use Alks\Metadata\MetadataDriver;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
@@ -36,7 +37,7 @@ class MetadataDriverTest extends TestCase
         $driver = new MetadataDriver();
         $registered = $driver->getDrivers();
         $this->assertArrayHasKey(0, $registered);
-        $this->assertInstanceOf(ReflectionMetadataDriver::class,$registered[0]);
+        $this->assertInstanceOf(ReflectionMetadataDriver::class, $registered[0]);
     }
 
     public function testAnnotationInitialization()
@@ -53,7 +54,7 @@ class MetadataDriverTest extends TestCase
         $driver = new MetadataDriver();
         $dirname = 'annotationsCacheDir';
         $this->assertFalse($this->root->hasChild($dirname));
-        $driver->enableAnnotations(vfsStream::url('testDir').DIRECTORY_SEPARATOR.$dirname);
+        $driver->enableAnnotations(vfsStream::url('testDir') . DIRECTORY_SEPARATOR . $dirname);
         $this->assertTrue($this->root->hasChild($dirname));
     }
 
@@ -64,7 +65,7 @@ class MetadataDriverTest extends TestCase
             $customDriver
         ]);
         $this->assertEquals(1, count($driver->getDrivers()));
-        $this->assertSame($customDriver,$driver->getDrivers()[0]);
+        $this->assertSame($customDriver, $driver->getDrivers()[0]);
     }
 
     public function testGetCachedClassMetadata()
@@ -85,7 +86,7 @@ class MetadataDriverTest extends TestCase
             ->willReturn('class_name');
         $driver = new MetadataDriver();
         $driver->registerCache($cache);
-        $this->assertSame($metadata,$driver->getClassMetadata($class));
+        $this->assertSame($metadata, $driver->getClassMetadata($class));
     }
 
     public function testNotCachedClassMetadata()
@@ -98,7 +99,7 @@ class MetadataDriverTest extends TestCase
             ->willReturn(false);
         $cache->expects($this->once())
             ->method('set')
-            ->with('class.class_name',$metadata)
+            ->with('class.class_name', $metadata)
             ->willReturn(true);
         $class = $this->createMock(\ReflectionClass::class);
         $class->expects($this->once())
@@ -112,7 +113,7 @@ class MetadataDriverTest extends TestCase
         $driver = new MetadataDriver();
         $driver->registerCache($cache);
         $driver->register($customDriver);
-        $this->assertSame($metadata,$driver->getClassMetadata($class));
+        $this->assertSame($metadata, $driver->getClassMetadata($class));
     }
 
     public function testGetClassMetadataWithNoValidDriver()
@@ -164,7 +165,7 @@ class MetadataDriverTest extends TestCase
             ->willReturn('property_name');
         $driver = new MetadataDriver();
         $driver->registerCache($cache);
-        $this->assertSame($metadata,$driver->getPropertyMetadata($property));
+        $this->assertSame($metadata, $driver->getPropertyMetadata($property));
     }
 
     public function testNotCachedPropertyMetadata()
@@ -177,7 +178,7 @@ class MetadataDriverTest extends TestCase
             ->willReturn(false);
         $cache->expects($this->once())
             ->method('set')
-            ->with('property.class_name.property_name',$metadata)
+            ->with('property.class_name.property_name', $metadata)
             ->willReturn(true);
         $class = $this->createMock(\ReflectionClass::class);
         $class->expects($this->once())
@@ -198,7 +199,7 @@ class MetadataDriverTest extends TestCase
         $driver = new MetadataDriver();
         $driver->registerCache($cache);
         $driver->register($customDriver);
-        $this->assertSame($metadata,$driver->getPropertyMetadata($property));
+        $this->assertSame($metadata, $driver->getPropertyMetadata($property));
     }
 
     public function testGetPropertyMetadataWithNoValidDriver()
@@ -257,7 +258,7 @@ class MetadataDriverTest extends TestCase
             ->willReturn('method_name');
         $driver = new MetadataDriver();
         $driver->registerCache($cache);
-        $this->assertSame($metadata,$driver->getMethodMetadata($method));
+        $this->assertSame($metadata, $driver->getMethodMetadata($method));
     }
 
     public function testNotCachedMethodMetadata()
@@ -270,7 +271,7 @@ class MetadataDriverTest extends TestCase
             ->willReturn(false);
         $cache->expects($this->once())
             ->method('set')
-            ->with('method.class_name.method_name',$metadata)
+            ->with('method.class_name.method_name', $metadata)
             ->willReturn(true);
         $class = $this->createMock(\ReflectionClass::class);
         $class->expects($this->once())
@@ -291,7 +292,7 @@ class MetadataDriverTest extends TestCase
         $driver = new MetadataDriver();
         $driver->registerCache($cache);
         $driver->register($customDriver);
-        $this->assertSame($metadata,$driver->getMethodMetadata($method));
+        $this->assertSame($metadata, $driver->getMethodMetadata($method));
     }
 
     public function testGetMethodMetadataWithNoValidDriver()

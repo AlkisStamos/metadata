@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace AlkisStamos\Metadata\Cache;
+namespace Alks\Metadata\Cache;
 
 use Psr\SimpleCache\CacheInterface;
 
@@ -28,8 +28,7 @@ abstract class AbstractCache implements CacheInterface
      */
     protected function validateKey($key)
     {
-        if(!is_string($key))
-        {
+        if (!is_string($key)) {
             throw new InvalidArgumentException(sprintf('Cache key must be string, "%s" given', gettype($key)));
         }
     }
