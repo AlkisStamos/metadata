@@ -10,16 +10,18 @@ namespace Alks\Metadata\Tests\Driver;
 
 use Alks\Metadata\Driver\DocCommentMetadataDriver;
 use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
+use ReflectionParameter;
 
 class DocCommentMetadataDriverTest extends TestCase
 {
     public function testGetMethodMetadataForUnknownArgument()
     {
-        $argument = $this->createMock(\ReflectionParameter::class);
+        $argument = $this->createMock(ReflectionParameter::class);
         $argument->expects($this->exactly(2))
             ->method('getName')
             ->willReturn('argumentName');
-        $method = $this->createMock(\ReflectionMethod::class);
+        $method = $this->createMock(ReflectionMethod::class);
         $method->expects($this->exactly(2))
             ->method('getParameters')
             ->will($this->onConsecutiveCalls([], [$argument]));

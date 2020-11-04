@@ -2,6 +2,10 @@
 
 
 namespace Alks\Metadata\Driver;
+
+use InvalidArgumentException;
+use ReflectionClass;
+
 /**
  * Had to manually copy and edit the file due to several deprecation warnings
  */
@@ -10,7 +14,6 @@ namespace Alks\Metadata\Driver;
  * This file is part of the Nette Framework (https://nette.org)
  * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
-
 
 
 /**
@@ -25,18 +28,17 @@ class UseStatements
     private static $cache = [];
 
 
-
     /**
      * Expands class name into full name.
      *
-     * @param  string
+     * @param string
      * @return string  full name
      */
-    public static function expandClassName($name, \ReflectionClass $rc)
+    public static function expandClassName($name, ReflectionClass $rc)
     {
         $lower = strtolower($name);
         if (empty($name)) {
-            throw new \InvalidArgumentException('Class name must not be empty.');
+            throw new InvalidArgumentException('Class name must not be empty.');
         } elseif (self::isBuiltinType($lower)) {
             return $lower;
         } elseif ($lower === 'self' || $lower === 'static' || $lower === '$this') {
@@ -56,12 +58,19 @@ class UseStatements
         }
     }
 
-
+    /**
+     * @param string $type
+     * @return bool
+     */
+    public static function isBuiltinType($type)
+    {
+        return in_array(strtolower($type), ['string', 'int', 'float', 'bool', 'array', 'callable'], TRUE);
+    }
 
     /**
      * @return array of [alias => class]
      */
-    public static function getUseStatements(\ReflectionClass $class)
+    public static function getUseStatements(ReflectionClass $class)
     {
         if (!isset(self::$cache[$name = $class->getName()])) {
             if ($class->isInternal()) {
@@ -75,30 +84,10 @@ class UseStatements
         return self::$cache[$name];
     }
 
-
-
-    /**
-     * @param string $type
-     * @return bool
-     */
-    public static function isBuiltinType($type)
-    {
-        return in_array(strtolower($type), ['string', 'int', 'float', 'bool', 'array', 'callable'], TRUE);
-    }
-
-
-    private static function iterateTokens($tokens)
-    {
-        foreach ($tokens as $key=>$token) {
-            yield [$key=>$token];
-        }
-    }
-
-
     /**
      * Parses PHP code.
      *
-     * @param  string
+     * @param string
      * @return array of [class => [alias => class, ...]]
      */
     public static function parseUseStatements($code, $forClass = NULL)
@@ -112,7 +101,7 @@ class UseStatements
 //        while (list(, $token) = self::iterateTokens($tokens)) {
 //        while (list(, $token) = each($tokens)) {
 //            list(, $token) = current($tokens);
-        for($i=0;$i<count($tokens);$i++) {
+        for ($i = 0; $i < count($tokens); $i++) {
             $token = current($tokens);
             next($tokens);
             switch (is_array($token) ? $token[0] : $token) {
@@ -181,14 +170,12 @@ class UseStatements
         return $res;
     }
 
-
-
-    private static function fetch(& $tokens, $take)
+    private static function fetch(&$tokens, $take)
     {
         $res = NULL;
         while ($token = current($tokens)) {
             list($token, $s) = is_array($token) ? $token : [$token, $token];
-            if (in_array($token, (array) $take, TRUE)) {
+            if (in_array($token, (array)$take, TRUE)) {
                 $res .= $s;
             } elseif (!in_array($token, [T_DOC_COMMENT, T_WHITESPACE, T_COMMENT], TRUE)) {
                 break;
@@ -196,6 +183,13 @@ class UseStatements
             next($tokens);
         }
         return $res;
+    }
+
+    private static function iterateTokens($tokens)
+    {
+        foreach ($tokens as $key => $token) {
+            yield [$key => $token];
+        }
     }
 
 }

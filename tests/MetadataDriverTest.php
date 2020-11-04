@@ -19,6 +19,10 @@ use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
+use RuntimeException;
 
 class MetadataDriverTest extends TestCase
 {
@@ -80,7 +84,7 @@ class MetadataDriverTest extends TestCase
             ->method('get')
             ->with('class.class_name')
             ->willReturn($metadata);
-        $class = $this->createMock(\ReflectionClass::class);
+        $class = $this->createMock(ReflectionClass::class);
         $class->expects($this->once())
             ->method('getName')
             ->willReturn('class_name');
@@ -101,7 +105,7 @@ class MetadataDriverTest extends TestCase
             ->method('set')
             ->with('class.class_name', $metadata)
             ->willReturn(true);
-        $class = $this->createMock(\ReflectionClass::class);
+        $class = $this->createMock(ReflectionClass::class);
         $class->expects($this->once())
             ->method('getName')
             ->willReturn('class_name');
@@ -118,14 +122,14 @@ class MetadataDriverTest extends TestCase
 
     public function testGetClassMetadataWithNoValidDriver()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot generate class metadata for class_name with the registered drivers');
         $cache = $this->createMock(CacheInterface::class);
         $cache->expects($this->once())
             ->method('has')
             ->with('class.class_name')
             ->willReturn(false);
-        $class = $this->createMock(\ReflectionClass::class);
+        $class = $this->createMock(ReflectionClass::class);
         $class->expects($this->exactly(2))
             ->method('getName')
             ->willReturn('class_name');
@@ -152,11 +156,11 @@ class MetadataDriverTest extends TestCase
             ->method('get')
             ->with('property.class_name.property_name')
             ->willReturn($metadata);
-        $class = $this->createMock(\ReflectionClass::class);
+        $class = $this->createMock(ReflectionClass::class);
         $class->expects($this->once())
             ->method('getName')
             ->willReturn('class_name');
-        $property = $this->createMock(\ReflectionProperty::class);
+        $property = $this->createMock(ReflectionProperty::class);
         $property->expects($this->once())
             ->method('getDeclaringClass')
             ->willReturn($class);
@@ -180,11 +184,11 @@ class MetadataDriverTest extends TestCase
             ->method('set')
             ->with('property.class_name.property_name', $metadata)
             ->willReturn(true);
-        $class = $this->createMock(\ReflectionClass::class);
+        $class = $this->createMock(ReflectionClass::class);
         $class->expects($this->once())
             ->method('getName')
             ->willReturn('class_name');
-        $property = $this->createMock(\ReflectionProperty::class);
+        $property = $this->createMock(ReflectionProperty::class);
         $property->expects($this->once())
             ->method('getDeclaringClass')
             ->willReturn($class);
@@ -204,18 +208,18 @@ class MetadataDriverTest extends TestCase
 
     public function testGetPropertyMetadataWithNoValidDriver()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot generate metadata for class_name::property_name with the registered drivers');
         $cache = $this->createMock(CacheInterface::class);
         $cache->expects($this->once())
             ->method('has')
             ->with('property.class_name.property_name')
             ->willReturn(false);
-        $class = $this->createMock(\ReflectionClass::class);
+        $class = $this->createMock(ReflectionClass::class);
         $class->expects($this->exactly(2))
             ->method('getName')
             ->willReturn('class_name');
-        $property = $this->createMock(\ReflectionProperty::class);
+        $property = $this->createMock(ReflectionProperty::class);
         $property->expects($this->exactly(2))
             ->method('getDeclaringClass')
             ->willReturn($class);
@@ -245,11 +249,11 @@ class MetadataDriverTest extends TestCase
             ->method('get')
             ->with('method.class_name.method_name')
             ->willReturn($metadata);
-        $class = $this->createMock(\ReflectionClass::class);
+        $class = $this->createMock(ReflectionClass::class);
         $class->expects($this->once())
             ->method('getName')
             ->willReturn('class_name');
-        $method = $this->createMock(\ReflectionMethod::class);
+        $method = $this->createMock(ReflectionMethod::class);
         $method->expects($this->once())
             ->method('getDeclaringClass')
             ->willReturn($class);
@@ -273,11 +277,11 @@ class MetadataDriverTest extends TestCase
             ->method('set')
             ->with('method.class_name.method_name', $metadata)
             ->willReturn(true);
-        $class = $this->createMock(\ReflectionClass::class);
+        $class = $this->createMock(ReflectionClass::class);
         $class->expects($this->once())
             ->method('getName')
             ->willReturn('class_name');
-        $method = $this->createMock(\ReflectionMethod::class);
+        $method = $this->createMock(ReflectionMethod::class);
         $method->expects($this->once())
             ->method('getDeclaringClass')
             ->willReturn($class);
@@ -297,18 +301,18 @@ class MetadataDriverTest extends TestCase
 
     public function testGetMethodMetadataWithNoValidDriver()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot generate metadata for class_name::method_name with the registered drivers');
         $cache = $this->createMock(CacheInterface::class);
         $cache->expects($this->once())
             ->method('has')
             ->with('method.class_name.method_name')
             ->willReturn(false);
-        $class = $this->createMock(\ReflectionClass::class);
+        $class = $this->createMock(ReflectionClass::class);
         $class->expects($this->exactly(2))
             ->method('getName')
             ->willReturn('class_name');
-        $method = $this->createMock(\ReflectionMethod::class);
+        $method = $this->createMock(ReflectionMethod::class);
         $method->expects($this->exactly(2))
             ->method('getDeclaringClass')
             ->willReturn($class);

@@ -11,6 +11,7 @@ namespace Alks\Metadata\Tests\Cache;
 use Alks\Metadata\Cache\InMemoryCache;
 use Alks\Metadata\Cache\InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 /**
  * @package Metadata
@@ -41,7 +42,7 @@ class InMemoryCacheTest extends TestCase
     public function testGetWithValidKey()
     {
         $cache = new InMemoryCache();
-        $value = new \stdClass();
+        $value = new stdClass();
         $cache->set('key', $value);
         $default = false;
         $this->assertSame($value, $cache->get('key', $default));
@@ -56,7 +57,7 @@ class InMemoryCacheTest extends TestCase
     public function testDeleteWithValidKey()
     {
         $cache = new InMemoryCache();
-        $value = new \stdClass();
+        $value = new stdClass();
         $cache->set('key', $value);
         $default = false;
         $this->assertSame($value, $cache->get('key', $default));
@@ -67,7 +68,7 @@ class InMemoryCacheTest extends TestCase
     public function testClear()
     {
         $cache = new InMemoryCache();
-        $value = new \stdClass();
+        $value = new stdClass();
         $cache->set('key', $value);
         $default = false;
         $this->assertSame($value, $cache->get('key', $default));
@@ -87,7 +88,7 @@ class InMemoryCacheTest extends TestCase
     public function testGetMultipleWithValidKeys()
     {
         $cache = new InMemoryCache();
-        $valueSet = new \stdClass();
+        $valueSet = new stdClass();
         $cache->set('key', $valueSet);
         $default = false;
         foreach ($cache->getMultiple(['invalid', 'key'], $default) as $key => $value) {
@@ -120,7 +121,7 @@ class InMemoryCacheTest extends TestCase
             $this->assertSame($values[$range[$key]], $value);
         }
         $this->assertTrue($cache->deleteMultiple(range('a', 'e')));
-        $default = new \stdClass();
+        $default = new stdClass();
         foreach ($cache->getMultiple(range('a', 'f'), $default) as $key => $value) {
             if ($key === 5) {
                 $this->assertSame($values[$range[$key]], $value);

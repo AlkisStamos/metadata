@@ -11,6 +11,9 @@ namespace Alks\Metadata\Driver;
 use Alks\Metadata\Metadata\ClassMetadata;
 use Alks\Metadata\Metadata\MethodMetadata;
 use Alks\Metadata\Metadata\PropertyMetadata;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
 
 /**
  * @package Metadata
@@ -25,24 +28,24 @@ interface MetadataDriverInterface
     /**
      * Generates the class metadata from a reflection class
      *
-     * @param \ReflectionClass $class
+     * @param ReflectionClass $class
      * @return ClassMetadata|null
      */
-    public function getClassMetadata(\ReflectionClass $class): ?ClassMetadata;
+    public function getClassMetadata(ReflectionClass $class): ?ClassMetadata;
 
     /**
      * Generates the property metadata from a reflection property
      *
-     * @param \ReflectionProperty $property
+     * @param ReflectionProperty $property
      * @return PropertyMetadata|null
      */
-    public function getPropertyMetadata(\ReflectionProperty $property): ?PropertyMetadata;
+    public function getPropertyMetadata(ReflectionProperty $property): ?PropertyMetadata;
 
     /**
      * Generates the method metadata from a reflection method
      *
-     * @param \ReflectionMethod $method
+     * @param ReflectionMethod $method
      * @return MethodMetadata|null
      */
-    public function getMethodMetadata(\ReflectionMethod $method): ?MethodMetadata;
+    public function getMethodMetadata(ReflectionMethod $method): ?MethodMetadata;
 }

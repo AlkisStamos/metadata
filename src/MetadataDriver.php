@@ -18,6 +18,11 @@ use Alks\Metadata\Metadata\PropertyMetadata;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\FileCacheReader;
 use Psr\SimpleCache\CacheInterface;
+use Psr\SimpleCache\InvalidArgumentException;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
+use RuntimeException;
 
 /**
  * @package Metadata
@@ -87,12 +92,12 @@ class MetadataDriver implements MetadataDriverInterface
     /**
      * Generates the class metadata from a reflection class
      *
-     * @param \ReflectionClass $class
+     * @param ReflectionClass $class
      * @return ClassMetadata|null
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
-    public function getClassMetadata(\ReflectionClass $class): ?ClassMetadata
+    public function getClassMetadata(ReflectionClass $class): ?ClassMetadata
     {
         $cachedKey = 'class.' . $this->cachedClassName($class->getName());
         $cached = $this->pullFromCache($cachedKey);
@@ -106,7 +111,7 @@ class MetadataDriver implements MetadataDriverInterface
                 return $classMetadata;
             }
         }
-        throw new \RuntimeException('Cannot generate class metadata for ' . $class->getName() . ' with the registered drivers');
+        throw new RuntimeException('Cannot generate class metadata for ' . $class->getName() . ' with the registered drivers');
     }
 
     /**
@@ -125,7 +130,7 @@ class MetadataDriver implements MetadataDriverInterface
      *
      * @param $key
      * @return mixed|null
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function pullFromCache($key)
     {
@@ -155,7 +160,7 @@ class MetadataDriver implements MetadataDriverInterface
      *
      * @param $key
      * @param $item
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function cache($key, $item)
     {
@@ -165,12 +170,12 @@ class MetadataDriver implements MetadataDriverInterface
     /**
      * Generates the property metadata from a reflection property
      *
-     * @param \ReflectionProperty $property
+     * @param ReflectionProperty $property
      * @return PropertyMetadata|null
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
-    public function getPropertyMetadata(\ReflectionProperty $property): ?PropertyMetadata
+    public function getPropertyMetadata(ReflectionProperty $property): ?PropertyMetadata
     {
         $cachedKey = 'property.' . $this->cachedClassName($property->getDeclaringClass()->getName()) . '.' . $property->getName();
         $cached = $this->pullFromCache($cachedKey);
@@ -184,18 +189,18 @@ class MetadataDriver implements MetadataDriverInterface
                 return $propertyMetadata;
             }
         }
-        throw new \RuntimeException('Cannot generate metadata for ' . $property->getDeclaringClass()->getName() . '::' . $property->getName() . ' with the registered drivers');
+        throw new RuntimeException('Cannot generate metadata for ' . $property->getDeclaringClass()->getName() . '::' . $property->getName() . ' with the registered drivers');
     }
 
     /**
      * Generates the method metadata from a reflection method
      *
-     * @param \ReflectionMethod $method
+     * @param ReflectionMethod $method
      * @return MethodMetadata|null
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
-    public function getMethodMetadata(\ReflectionMethod $method): ?MethodMetadata
+    public function getMethodMetadata(ReflectionMethod $method): ?MethodMetadata
     {
         $cachedKey = 'method.' . $this->cachedClassName($method->getDeclaringClass()->getName()) . '.' . $method->getName();
         $cached = $this->pullFromCache($cachedKey);
@@ -209,7 +214,7 @@ class MetadataDriver implements MetadataDriverInterface
                 return $methodMetadata;
             }
         }
-        throw new \RuntimeException('Cannot generate metadata for ' . $method->getDeclaringClass()->getName() . '::' . $method->getName() . ' with the registered drivers');
+        throw new RuntimeException('Cannot generate metadata for ' . $method->getDeclaringClass()->getName() . '::' . $method->getName() . ' with the registered drivers');
     }
 
     /**

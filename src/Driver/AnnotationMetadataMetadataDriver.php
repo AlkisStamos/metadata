@@ -15,6 +15,9 @@ use Alks\Metadata\Metadata\MethodMetadata;
 use Alks\Metadata\Metadata\PropertyMetadata;
 use Alks\Metadata\Metadata\TypeMetadata;
 use Doctrine\Common\Annotations\Reader;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
 
 /**
  * @package Metadata
@@ -52,10 +55,10 @@ class AnnotationMetadataMetadataDriver extends DocCommentMetadataDriver
     /**
      * Overrides the main class metadata generation to add extra annotations if any
      *
-     * @param \ReflectionClass $class
+     * @param ReflectionClass $class
      * @return ClassMetadata|null
      */
-    public function getClassMetadata(\ReflectionClass $class): ?ClassMetadata
+    public function getClassMetadata(ReflectionClass $class): ?ClassMetadata
     {
         if (isset($this->cache[$class->getName()])) {
             return $this->cache[$class->getName()];
@@ -74,10 +77,10 @@ class AnnotationMetadataMetadataDriver extends DocCommentMetadataDriver
     /**
      * Generates the method metadata from a reflection method and overrides properties from any annotations defined.
      *
-     * @param \ReflectionMethod $method
+     * @param ReflectionMethod $method
      * @return MethodMetadata|null
      */
-    public function getMethodMetadata(\ReflectionMethod $method): ?MethodMetadata
+    public function getMethodMetadata(ReflectionMethod $method): ?MethodMetadata
     {
         $methodMetadata = parent::getMethodMetadata($method);
         $annotations = $this->annotationReader->getMethodAnnotations($method);
@@ -92,10 +95,10 @@ class AnnotationMetadataMetadataDriver extends DocCommentMetadataDriver
     /**
      * Reads all properties metadata and overrides certain parameters if any custom Property annotations are defined
      *
-     * @param \ReflectionProperty $property
+     * @param ReflectionProperty $property
      * @return PropertyMetadata|null
      */
-    public function getPropertyMetadata(\ReflectionProperty $property): ?PropertyMetadata
+    public function getPropertyMetadata(ReflectionProperty $property): ?PropertyMetadata
     {
         $propertyMetadata = parent::getPropertyMetadata($property);
         $annotations = $this->annotationReader->getPropertyAnnotations($property);

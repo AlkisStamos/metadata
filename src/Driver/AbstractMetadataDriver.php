@@ -10,6 +10,9 @@ namespace Alks\Metadata\Driver;
 
 use Alks\Metadata\Metadata\ClassMetadata;
 use Alks\Metadata\Metadata\PropertyMetadata;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
 
 /**
  * @package Metadata
@@ -24,10 +27,10 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
     /**
      * Generates the class metadata from a reflection class
      *
-     * @param \ReflectionClass $class
+     * @param ReflectionClass $class
      * @return ClassMetadata|null
      */
-    public function getClassMetadata(\ReflectionClass $class): ?ClassMetadata
+    public function getClassMetadata(ReflectionClass $class): ?ClassMetadata
     {
         $classMetadata = new ClassMetadata($className = $class->getName());
         $classMetadata->addFileProperty('path', $class->getFileName());
@@ -71,7 +74,7 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
      */
     protected function resolveAccess($reflection)
     {
-        if ($reflection instanceof \ReflectionProperty || $reflection instanceof \ReflectionMethod) {
+        if ($reflection instanceof ReflectionProperty || $reflection instanceof ReflectionMethod) {
             if ($reflection->isPrivate()) {
                 return 'private';
             }

@@ -9,6 +9,7 @@
 namespace Alks\Metadata\Annotation;
 
 use Alks\Metadata\Metadata\AbstractMetadata;
+use BadMethodCallException;
 
 /**
  * @package Metadata
@@ -30,7 +31,7 @@ abstract class Annotation extends AbstractMetadata
     {
         foreach ($data as $key => $value) {
             if (!property_exists($this, $key)) {
-                throw new \BadMethodCallException(sprintf('Unknown property "%s" on annotation "%s".', $key, get_class($this)));
+                throw new BadMethodCallException(sprintf('Unknown property "%s" on annotation "%s".', $key, get_class($this)));
             }
             $this->{$key} = $value;
         }

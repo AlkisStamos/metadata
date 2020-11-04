@@ -12,13 +12,14 @@ use Alks\Metadata\Cache\ChainedCache;
 use Alks\Metadata\Cache\InMemoryCache;
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
+use stdClass;
 
 class ChainedCacheTest extends TestCase
 {
     public function testGetWithDefaultCache()
     {
         $cache = new ChainedCache();
-        $value = new \stdClass();
+        $value = new stdClass();
         $value->prop = 'test';
         $cache->set('key', $value);
         $this->assertSame($value, $cache->get('key'));
@@ -27,7 +28,7 @@ class ChainedCacheTest extends TestCase
     public function testGetWithCustomInMemoryCache()
     {
         $inMemoryCache = $this->createMock(InMemoryCache::class);
-        $value = new \stdClass();
+        $value = new stdClass();
         $value->prop = 'test';
         $inMemoryCache->expects($this->once())
             ->method('has')
@@ -44,7 +45,7 @@ class ChainedCacheTest extends TestCase
 
     public function testGetWithCustomCache()
     {
-        $value = new \stdClass();
+        $value = new stdClass();
         $value->prop = 'test';
         $customCache = $this->createMock(CacheInterface::class);
         $customCache->expects($this->once())
@@ -80,14 +81,14 @@ class ChainedCacheTest extends TestCase
             ->willReturn(false);
         $cache = new ChainedCache($memoryCache);
         $cache->register($customCache);
-        $default = new \stdClass();
+        $default = new stdClass();
         $default->test = 'test';
         $this->assertSame($default, $cache->get('key', $default));
     }
 
     public function testSetWithCustomCache()
     {
-        $value = new \stdClass();
+        $value = new stdClass();
         $value->prop = 'test';
         $customCache = $this->createMock(CacheInterface::class);
         $customCache->expects($this->once())
@@ -115,7 +116,7 @@ class ChainedCacheTest extends TestCase
 
     public function testDeleteWithoutCustomCache()
     {
-        $value = new \stdClass();
+        $value = new stdClass();
         $value->prop = 'test';
         $cache = new ChainedCache();
         $cache->set('key', $value);
@@ -127,7 +128,7 @@ class ChainedCacheTest extends TestCase
 
     public function testDeleteWithCustomCache()
     {
-        $value = new \stdClass();
+        $value = new stdClass();
         $value->prop = 'test';
         $customCache = $this->createMock(CacheInterface::class);
         $customCache->expects($this->once())
@@ -212,7 +213,7 @@ class ChainedCacheTest extends TestCase
         $keys = [];
         $cacheValues = [];
         foreach ($values as $value) {
-            $cacheValue = new \stdClass();
+            $cacheValue = new stdClass();
             $cacheValue->value = $value;
             $cacheValues[] = $cacheValue;
             $keys[] = $value . 'key';
