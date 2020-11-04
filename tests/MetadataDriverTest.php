@@ -8,7 +8,7 @@
 
 namespace Alks\Metadata\Tests;
 
-use Alks\Metadata\Driver\AnnotationMetadataMetadataDriver;
+use Alks\Metadata\Driver\AnnotationMetadataDriver;
 use Alks\Metadata\Driver\MetadataDriverInterface;
 use Alks\Metadata\Driver\ReflectionMetadataDriver;
 use Alks\Metadata\Metadata\ClassMetadata;
@@ -50,7 +50,7 @@ class MetadataDriverTest extends TestCase
         $driver->enableAnnotations();
         $registered = $driver->getDrivers();
         $this->assertArrayHasKey(0, $registered);
-        $this->assertInstanceOf(AnnotationMetadataMetadataDriver::class, $registered[0]);
+        $this->assertInstanceOf(AnnotationMetadataDriver::class, $registered[0]);
     }
 
     public function testAnnotationWithCacheInitialization()

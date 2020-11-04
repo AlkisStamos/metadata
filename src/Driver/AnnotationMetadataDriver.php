@@ -27,7 +27,7 @@ use ReflectionProperty;
  *
  * Driver to parse custom annotations in addition to the doc block and reflection properties
  */
-class AnnotationMetadataMetadataDriver extends DocCommentMetadataDriver
+class AnnotationMetadataDriver extends DocCommentMetadataDriver
 {
     /**
      * Default annotation reader

@@ -9,7 +9,7 @@
 namespace Alks\Metadata;
 
 use Alks\Metadata\Cache\ChainedCache;
-use Alks\Metadata\Driver\AnnotationMetadataMetadataDriver;
+use Alks\Metadata\Driver\AnnotationMetadataDriver;
 use Alks\Metadata\Driver\MetadataDriverInterface;
 use Alks\Metadata\Driver\ReflectionMetadataDriver;
 use Alks\Metadata\Metadata\ClassMetadata;
@@ -240,12 +240,12 @@ class MetadataDriver implements MetadataDriverInterface
     {
         AnnotationRegistry::registerLoader('class_exists');
         if ($cacheDir === null) {
-            $this->register(new AnnotationMetadataMetadataDriver(
+            $this->register(new AnnotationMetadataDriver(
                 new AnnotationReader()
             ));
             return $this;
         }
-        $this->register(new AnnotationMetadataMetadataDriver(
+        $this->register(new AnnotationMetadataDriver(
             new FileCacheReader(
                 new AnnotationReader(), $cacheDir
             )
