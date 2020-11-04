@@ -32,7 +32,7 @@ class DocCommentMetadataDriverTest extends TestCase
         $driver = new DocCommentMetadataDriver();
         $methodMetadata = $driver->getMethodMetadata($method);
         $this->assertEquals('methodName', $methodMetadata->name);
-        $this->assertEquals(1, count($methodMetadata->arguments));
+        $this->assertCount(1, $methodMetadata->arguments);
         $this->assertArrayHasKey('argumentName', $methodMetadata->arguments);
         $this->assertEquals('argumentName', $methodMetadata->arguments['argumentName']->name);
     }

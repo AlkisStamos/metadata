@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bc0c4751d3e85cc3a0a7e0bcda2b2b3b",
+    "content-hash": "c94bee494670264a7da166d4800117fe",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -135,69 +135,6 @@
                 "php"
             ],
             "time": "2019-10-30T14:39:59+00:00"
-        },
-        {
-            "name": "kdyby/parse-use-statements",
-            "version": "v0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Kdyby/ParseUseStatements.git",
-                "reference": "2754bde98d919a2158951d8f84350685f8fd9efc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Kdyby/ParseUseStatements/zipball/2754bde98d919a2158951d8f84350685f8fd9efc",
-                "reference": "2754bde98d919a2158951d8f84350685f8fd9efc",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4"
-            },
-            "require-dev": {
-                "nette/tester": "~1.7"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Kdyby\\ParseUseStatements\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause",
-                "GPL-2.0",
-                "GPL-3.0"
-            ],
-            "authors": [
-                {
-                    "name": "Filip Procházka",
-                    "email": "filip@prochazka.su",
-                    "homepage": "http://filip-prochazka.com"
-                },
-                {
-                    "name": "David Grudl",
-                    "homepage": "https://davidgrudl.com"
-                },
-                {
-                    "name": "Nette Community",
-                    "homepage": "https://nette.org/contributors"
-                }
-            ],
-            "description": "Parse use statements for a reflection object",
-            "homepage": "http://kdyby.org",
-            "keywords": [
-                "class",
-                "expand",
-                "import",
-                "kdyby",
-                "parse",
-                "reflection",
-                "statement",
-                "usages",
-                "use",
-                "uses"
-            ],
-            "time": "2016-09-07T21:22:38+00:00"
         },
         {
             "name": "psr/simple-cache",
@@ -965,6 +902,7 @@
             "keywords": [
                 "tokenizer"
             ],
+            "abandoned": true,
             "time": "2019-09-17T06:23:10+00:00"
         },
         {
