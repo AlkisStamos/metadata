@@ -227,7 +227,7 @@ class MetadataDriver implements MetadataDriverInterface
      * be used for annotation cache
      *
      * @param null $cacheDir
-     * @throws \Doctrine\Common\Annotations\AnnotationException
+     * @return MetadataDriver
      * @todo FileCacheReader is deprecated remove before upgrading the doctrine annotations
      */
     public function enableAnnotations($cacheDir = null)
@@ -236,12 +236,13 @@ class MetadataDriver implements MetadataDriverInterface
             $this->register(new AnnotationMetadataMetadataDriver(
                 new AnnotationReader()
             ));
-            return;
+            return $this;
         }
         $this->register(new AnnotationMetadataMetadataDriver(
             new FileCacheReader(
                 new AnnotationReader(), $cacheDir
             )
         ));
+        return $this;
     }
 }
