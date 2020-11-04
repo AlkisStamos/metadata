@@ -16,6 +16,7 @@ use Alks\Metadata\Metadata\ClassMetadata;
 use Alks\Metadata\Metadata\MethodMetadata;
 use Alks\Metadata\Metadata\PropertyMetadata;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\FileCacheReader;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
@@ -237,6 +238,7 @@ class MetadataDriver implements MetadataDriverInterface
      */
     public function enableAnnotations($cacheDir = null)
     {
+        AnnotationRegistry::registerLoader('class_exists');
         if ($cacheDir === null) {
             $this->register(new AnnotationMetadataMetadataDriver(
                 new AnnotationReader()

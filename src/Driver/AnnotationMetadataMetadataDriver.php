@@ -108,7 +108,7 @@ class AnnotationMetadataMetadataDriver extends DocCommentMetadataDriver
                 if ($annotation instanceof Property) {
                     $propertyMetadata->setter = $annotation->getSetter();
                     $propertyMetadata->getter = $annotation->getGetter();
-                    $type = $this->typeFromPropertyAnnotation($annotation);
+                    $type = $this->typeFromPropertyAnnotation($annotation, $property->getDeclaringClass());
                     if ($type !== null) {
                         $propertyMetadata->type = $type;
                     }
@@ -129,29 +129,45 @@ class AnnotationMetadataMetadataDriver extends DocCommentMetadataDriver
      * (flat or class) the method will return null
      *
      * @param Property $property
+     * @param ReflectionClass|null $reflectionClass
      * @return TypeMetadata|null
      */
-    protected function typeFromPropertyAnnotation(Property $property)
+    protected function typeFromPropertyAnnotation(Property $property, ?ReflectionClass $reflectionClass)
     {
         $typeName = $property->getType();
         if ($typeName === null) {
             return null;
         }
+        $typeName = $this->fixStaticClassReference($typeName);
         $isArray = false;
-        if (self::isCollectionType($typeName, $typeName)) {
+        if ($this->isCollectionType($typeName, $typeName)) {
             $isArray = true;
         }
-        $isFlat = self::isSimpleType($typeName);
+        $isFlat = $this->isSimpleType($typeName);
         if (!$isFlat) {
             if (!class_exists($typeName)) {
-                return null;
+                $typeName = $this->getTypeNameFromUseStatements($typeName, $reflectionClass);
+                if ($typeName === null) {
+                    return null;
+                }
             }
         }
         $typeMetadata = new TypeMetadata($typeName);
         $typeMetadata->format = $property->getFormat();
         $typeMetadata->isArray = $isArray;
-        $typeMetadata->isFlat = self::isSimpleType($typeName);
+        $typeMetadata->isFlat = $this->isSimpleType($typeName);
         $typeMetadata->isNullable = $property->isNullable();
         return $typeMetadata;
+    }
+
+    /**
+     * Allows the usage of ::class in annotations
+     *
+     * @param string $typeName
+     * @return string
+     */
+    public function fixStaticClassReference(string $typeName): string
+    {
+        return strpos($typeName, '::class') !== false ? trim(str_replace('::class', '', $typeName)) : $typeName;
     }
 }

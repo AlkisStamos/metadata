@@ -91,7 +91,7 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
      * @param string $type type name from gettype()
      * @return bool
      */
-    protected function isSimpleType($type)
+    protected function isSimpleType(string $type)
     {
         return self::isFlatType($type)
             || $type == 'array' || $type == 'object';

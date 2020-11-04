@@ -58,7 +58,7 @@ class DocCommentMetadataDriver extends ReflectionMetadataDriver
     {
         $props = $parsed === true ? $docBlock : $this->parseDocblockProperties($docBlock);
         if (isset($props[$target][0])) {
-            return self::fromDocBlockProperty($props[$target][0], $reflectionClass);
+            return $this->fromDocBlockProperty($props[$target][0], $reflectionClass);
         }
         return null;
     }
@@ -148,6 +148,9 @@ class DocCommentMetadataDriver extends ReflectionMetadataDriver
      */
     protected function getTypeNameFromUseStatements(string $typeName, ?ReflectionClass $reflectionClass): ?string
     {
+        if($reflectionClass === null) {
+            return null;
+        }
         $statements = UseStatements::getUseStatements($reflectionClass);
         return isset($statements[$typeName]) && class_exists($statements[$typeName]) ? $statements[$typeName] : null;
     }
