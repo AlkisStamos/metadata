@@ -100,10 +100,14 @@ class DocCommentMetadataDriver extends ReflectionMetadataDriver
             $isArray = true;
         }
         $isFlat = $this->isFlatType($typeName);
-        if (!$isFlat) {
-            if (!class_exists($typeName)) {
-                $typeName = $this->getTypeNameFromUseStatements($typeName, $reflectionClass);
-                if ($typeName === null) {
+        if (!$isFlat && !class_exists($typeName)) {
+            $originalTypeName = $typeName;
+            $typeName = $this->getTypeNameFromUseStatements($typeName, $reflectionClass);
+            if ($typeName === null && $reflectionClass !== null) {
+                $currentNamespace = $reflectionClass->getNamespaceName();
+                if (class_exists($currentNamespace . '\\' . $originalTypeName)) {
+                    $typeName = $currentNamespace . '\\' . $originalTypeName;
+                } else {
                     return null;
                 }
             }
