@@ -26,14 +26,14 @@ class InMemoryCache extends AbstractCache
      *
      * @var array
      */
-    protected $cache = [];
+    protected array $cache = [];
 
     /**
      * Wipes clean the entire cache's keys.
      *
      * @return bool True on success and false on failure.
      */
-    public function clear()
+    public function clear(): bool
     {
         $this->cache = [];
         return true;
@@ -90,7 +90,7 @@ class InMemoryCache extends AbstractCache
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *   MUST be thrown if the $key string is not a legal value.
      */
-    public function has($key)
+    public function has($key): bool
     {
         $this->validateKey($key);
         return array_key_exists($key, $this->cache);
@@ -110,7 +110,7 @@ class InMemoryCache extends AbstractCache
      *   MUST be thrown if $values is neither an array nor a Traversable,
      *   or if any of the $values are not a legal value.
      */
-    public function setMultiple($values, $ttl = null)
+    public function setMultiple($values, $ttl = null): bool
     {
         foreach ($values as $key => $value) {
             $this->set($key, $value, $ttl);
@@ -132,7 +132,7 @@ class InMemoryCache extends AbstractCache
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *   MUST be thrown if the $key string is not a legal value.
      */
-    public function set($key, $value, $ttl = null)
+    public function set($key, $value, $ttl = null): bool
     {
         $this->validateKey($key);
         $this->cache[$key] = $value;
@@ -150,7 +150,7 @@ class InMemoryCache extends AbstractCache
      *   MUST be thrown if $keys is neither an array nor a Traversable,
      *   or if any of the $keys are not a legal value.
      */
-    public function deleteMultiple($keys)
+    public function deleteMultiple($keys): bool
     {
         foreach ($keys as $key) {
             $this->delete($key);
@@ -168,7 +168,7 @@ class InMemoryCache extends AbstractCache
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *   MUST be thrown if the $key string is not a legal value.
      */
-    public function delete($key)
+    public function delete($key): bool
     {
         $this->validateKey($key);
         if ($this->has($key)) {

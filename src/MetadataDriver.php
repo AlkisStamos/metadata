@@ -40,13 +40,13 @@ class MetadataDriver implements MetadataDriverInterface
      *
      * @var MetadataDriverInterface[]
      */
-    protected $drivers = [];
+    protected array $drivers = [];
     /**
      * Collection of already registered driver names to disable duplicates
      *
      * @var string[]
      */
-    protected $registeredDrivers = [];
+    protected array $registeredDrivers = [];
     /**
      * The metadata cache
      *
@@ -58,29 +58,29 @@ class MetadataDriver implements MetadataDriverInterface
      *
      * @var bool
      */
-    private $isInitialized = false;
+    private bool $isInitialized = false;
 
     /**
      * MetadataDriver constructor.
-     * By default if no cache is passed in the constructor the driver will enable the built-in chained cache
+     * By default, if no cache is passed in the constructor the driver will enable the built-in chained cache
      * @param MetadataDriverInterface[] $drivers
-     * @param CacheInterface $cache
+     * @param CacheInterface|null $cache
      */
-    public function __construct(array $drivers = [], CacheInterface $cache = null)
+    public function __construct(array $drivers = [], ?CacheInterface $cache = null)
     {
         foreach ($drivers as $driver) {
             $this->register($driver);
         }
-        $this->cache = $cache === null ? new ChainedCache() : $cache;
+        $this->cache = $cache ?? new ChainedCache();
     }
 
     /**
      * Registers a metadata driver. Drivers will run in sequence in the order they have been registered
      *
      * @param MetadataDriverInterface $metadataDriver
-     * @return $this
+     * @return MetadataDriver
      */
-    public function register(MetadataDriverInterface $metadataDriver)
+    public function register(MetadataDriverInterface $metadataDriver): MetadataDriver
     {
         $key = get_class($metadataDriver);
         if (!isset($this->registeredDrivers[$key])) {
@@ -143,7 +143,7 @@ class MetadataDriver implements MetadataDriverInterface
      *
      * @return MetadataDriverInterface[]
      */
-    public function getDrivers()
+    public function getDrivers(): array
     {
         if (!$this->isInitialized) {
             $this->isInitialized = true;
@@ -163,7 +163,7 @@ class MetadataDriver implements MetadataDriverInterface
      * @param $item
      * @throws InvalidArgumentException
      */
-    protected function cache($key, $item)
+    protected function cache($key, $item): void
     {
         $this->cache->set($key, $item);
     }
@@ -223,7 +223,7 @@ class MetadataDriver implements MetadataDriverInterface
      *
      * @param CacheInterface $cache
      */
-    public function registerCache(CacheInterface $cache)
+    public function registerCache(CacheInterface $cache): void
     {
         $this->cache = $cache;
     }
@@ -236,7 +236,7 @@ class MetadataDriver implements MetadataDriverInterface
      * @return MetadataDriver
      * @todo FileCacheReader is deprecated remove before upgrading the doctrine annotations
      */
-    public function enableAnnotations($cacheDir = null)
+    public function enableAnnotations($cacheDir = null): MetadataDriver
     {
         AnnotationRegistry::registerLoader('class_exists');
         if ($cacheDir === null) {

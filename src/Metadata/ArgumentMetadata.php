@@ -22,13 +22,13 @@ class ArgumentMetadata
      *
      * @var string
      */
-    public $name;
+    public string $name;
     /**
      * The type of the argument (if defined)
      *
      * @var TypeMetadata|null
      */
-    public $type = null;
+    public ?TypeMetadata $type = null;
 
     /**
      * ArgumentMetadata constructor.

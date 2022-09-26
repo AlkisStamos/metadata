@@ -32,7 +32,7 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
      */
     public function getClassMetadata(ReflectionClass $class): ?ClassMetadata
     {
-        $classMetadata = new ClassMetadata($className = $class->getName());
+        $classMetadata = new ClassMetadata($class->getName());
         $classMetadata->addFileProperty('path', $class->getFileName());
         $methods = $class->getMethods();
         foreach ($methods as $method) {
@@ -41,11 +41,13 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
         $properties = $class->getProperties();
         foreach ($properties as $property) {
             $propertyMetadata = $this->getPropertyMetadata($property);
-            if ($propertyMetadata->getter === null) {
-                $propertyMetadata->getter = $this->getPropertyMethodName($classMetadata, $propertyMetadata);
-            }
-            if ($propertyMetadata->setter === null) {
-                $propertyMetadata->setter = $this->getPropertyMethodName($classMetadata, $propertyMetadata, 'set');
+            if ($propertyMetadata) {
+                if ($propertyMetadata->getter === null) {
+                    $propertyMetadata->getter = $this->getPropertyMethodName($classMetadata, $propertyMetadata);
+                }
+                if ($propertyMetadata->setter === null) {
+                    $propertyMetadata->setter = $this->getPropertyMethodName($classMetadata, $propertyMetadata, 'set');
+                }
             }
             $classMetadata->addPropertyMetadata($propertyMetadata);
         }
@@ -72,7 +74,7 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
      * @param $reflection
      * @return string
      */
-    protected function resolveAccess($reflection)
+    protected function resolveAccess($reflection): string
     {
         if ($reflection instanceof ReflectionProperty || $reflection instanceof ReflectionMethod) {
             if ($reflection->isPrivate()) {
@@ -91,10 +93,10 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
      * @param string $type type name from gettype()
      * @return bool
      */
-    protected function isSimpleType(string $type)
+    protected function isSimpleType(string $type): bool
     {
-        return self::isFlatType($type)
-            || $type == 'array' || $type == 'object';
+        return $this->isFlatType($type)
+            || $type === 'array' || $type === 'object';
     }
 
     /**
@@ -103,13 +105,13 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
      * @param string $type type name from gettype()
      * @return bool
      */
-    protected function isFlatType($type)
+    protected function isFlatType(string $type): bool
     {
-        return $type == 'NULL'
-            || $type == 'string'
-            || $type == 'boolean' || $type == 'bool'
-            || $type == 'integer' || $type == 'int'
-            || $type == 'double' || $type == 'float';
+        return $type === 'NULL'
+            || $type === 'string'
+            || $type === 'boolean' || $type === 'bool'
+            || $type === 'integer' || $type === 'int'
+            || $type === 'double' || $type === 'float';
     }
 
     /**
@@ -120,7 +122,7 @@ abstract class AbstractMetadataDriver implements MetadataDriverInterface
      * @param $realType
      * @return bool
      */
-    protected function isCollectionType($type, &$realType)
+    protected function isCollectionType($type, &$realType): bool
     {
         if (substr($type, -2) === '[]') {
             $realType = substr($type, 0, -2);

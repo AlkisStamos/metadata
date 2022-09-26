@@ -22,25 +22,25 @@ class ClassMetadata extends AbstractMetadataHost
      *
      * @var string
      */
-    public $name;
+    public string $name;
     /**
      * File properties of the host file of the class
      *
      * @var array
      */
-    public $fileProperties;
+    public array $fileProperties;
     /**
      * Collection of property metadata as propertyName=>value
      *
      * @var PropertyMetadata[]
      */
-    public $properties = [];
+    public array $properties = [];
     /**
      * Collection of method metadata as methodName=>value
      *
      * @var MethodMetadata[]
      */
-    public $methods = [];
+    public array $methods = [];
 
     /**
      * ArgumentMetadata constructor.

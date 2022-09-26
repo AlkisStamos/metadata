@@ -25,25 +25,29 @@ class UseStatements
 {
 
     /** @var array */
-    private static $cache = [];
+    private static array $cache = [];
 
 
     /**
      * Expands class name into full name.
      *
-     * @param string
+     * @param string $name
+     * @param ReflectionClass $rc
      * @return string  full name
      */
-    public static function expandClassName($name, ReflectionClass $rc)
+    public static function expandClassName(string $name, ReflectionClass $rc): string
     {
         $lower = strtolower($name);
         if (empty($name)) {
             throw new InvalidArgumentException('Class name must not be empty.');
-        } elseif (self::isBuiltinType($lower)) {
+        }
+        if (self::isBuiltinType($lower)) {
             return $lower;
-        } elseif ($lower === 'self' || $lower === 'static' || $lower === '$this') {
+        }
+        if ($lower === 'self' || $lower === 'static' || $lower === '$this') {
             return $rc->getName();
-        } elseif ($name[0] === '\\') { // fully qualified name
+        }
+        if ($name[0] === '\\') { // fully qualified name
             return ltrim($name, '\\');
         }
         $uses = self::getUseStatements($rc);
@@ -51,18 +55,18 @@ class UseStatements
         if (isset($uses[$parts[0]])) {
             $parts[0] = $uses[$parts[0]];
             return implode('\\', $parts);
-        } elseif ($rc->inNamespace()) {
-            return $rc->getNamespaceName() . '\\' . $name;
-        } else {
-            return $name;
         }
+        if ($rc->inNamespace()) {
+            return $rc->getNamespaceName() . '\\' . $name;
+        }
+        return $name;
     }
 
     /**
      * @param string $type
      * @return bool
      */
-    public static function isBuiltinType($type)
+    public static function isBuiltinType(string $type): bool
     {
         return in_array(strtolower($type), ['string', 'int', 'float', 'bool', 'array', 'callable'], TRUE);
     }
@@ -70,7 +74,7 @@ class UseStatements
     /**
      * @return array of [alias => class]
      */
-    public static function getUseStatements(ReflectionClass $class)
+    public static function getUseStatements(ReflectionClass $class): array
     {
         if (!isset(self::$cache[$name = $class->getName()])) {
             if ($class->isInternal()) {
@@ -87,21 +91,16 @@ class UseStatements
     /**
      * Parses PHP code.
      *
-     * @param string
+     * @param string $code
+     * @param null $forClass
      * @return array of [class => [alias => class, ...]]
      */
-    public static function parseUseStatements($code, $forClass = NULL)
+    public static function parseUseStatements(string $code, $forClass = NULL): array
     {
         $tokens = token_get_all($code);
         $namespace = $class = $classLevel = $level = NULL;
         $res = $uses = [];
-
-//        reset($tokens);
-//        foreach($tokens as &$token) {
-//        while (list(, $token) = self::iterateTokens($tokens)) {
-//        while (list(, $token) = each($tokens)) {
-//            list(, $token) = current($tokens);
-        for ($i = 0; $i < count($tokens); $i++) {
+        for ($i = 0, $iMax = count($tokens); $i < $iMax; $i++) {
             $token = current($tokens);
             next($tokens);
             switch (is_array($token) ? $token[0] : $token) {
@@ -164,17 +163,16 @@ class UseStatements
                     }
                     $level--;
             }
-//            next($tokens);
         }
 
         return $res;
     }
 
-    private static function fetch(&$tokens, $take)
+    private static function fetch(&$tokens, $take): ?string
     {
         $res = NULL;
         while ($token = current($tokens)) {
-            list($token, $s) = is_array($token) ? $token : [$token, $token];
+            [$token, $s] = is_array($token) ? $token : [$token, $token];
             if (in_array($token, (array)$take, TRUE)) {
                 $res .= $s;
             } elseif (!in_array($token, [T_DOC_COMMENT, T_WHITESPACE, T_COMMENT], TRUE)) {
@@ -185,7 +183,7 @@ class UseStatements
         return $res;
     }
 
-    private static function iterateTokens($tokens)
+    private static function iterateTokens($tokens): \Generator
     {
         foreach ($tokens as $key => $token) {
             yield [$key => $token];

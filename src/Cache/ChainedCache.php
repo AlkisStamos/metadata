@@ -28,13 +28,13 @@ class ChainedCache extends AbstractCache
      *
      * @var InMemoryCache
      */
-    protected $inMemoryCache;
+    protected InMemoryCache $inMemoryCache;
     /**
      * Registered PSR compliant cache adapters
      *
      * @var CacheInterface[]
      */
-    protected $availablePools = [];
+    protected array $availablePools = [];
 
     /**
      * ChainedCache constructor.
@@ -51,7 +51,7 @@ class ChainedCache extends AbstractCache
      *
      * @return bool True on success and false on failure.
      */
-    public function clear()
+    public function clear(): bool
     {
         $ans = $this->inMemoryCache->clear();
         foreach ($this->availablePools as $pool) {
@@ -121,7 +121,7 @@ class ChainedCache extends AbstractCache
      *   MUST be thrown if $values is neither an array nor a Traversable,
      *   or if any of the $values are not a legal value.
      */
-    public function setMultiple($values, $ttl = null)
+    public function setMultiple($values, $ttl = null): bool
     {
         $ans = true;
         foreach ($values as $key => $value) {
@@ -168,7 +168,7 @@ class ChainedCache extends AbstractCache
      *   MUST be thrown if $keys is neither an array nor a Traversable,
      *   or if any of the $keys are not a legal value.
      */
-    public function deleteMultiple($keys)
+    public function deleteMultiple($keys): bool
     {
         $ans = true;
         foreach ($keys as $key) {
@@ -189,7 +189,7 @@ class ChainedCache extends AbstractCache
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *   MUST be thrown if the $key string is not a legal value.
      */
-    public function delete($key)
+    public function delete($key): bool
     {
         $ans = $this->inMemoryCache->delete($key);
         foreach ($this->availablePools as $pool) {
@@ -215,7 +215,7 @@ class ChainedCache extends AbstractCache
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *   MUST be thrown if the $key string is not a legal value.
      */
-    public function has($key)
+    public function has($key): bool
     {
         if ($this->inMemoryCache->has($key)) {
             return true;
@@ -234,7 +234,7 @@ class ChainedCache extends AbstractCache
      * @param CacheInterface $cache
      * @return $this
      */
-    public function register(CacheInterface $cache)
+    public function register(CacheInterface $cache): ChainedCache
     {
         $this->availablePools[] = $cache;
         return $this;

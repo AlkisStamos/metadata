@@ -23,25 +23,25 @@ class MethodMetadata extends AbstractMetadataHost
      *
      * @var string
      */
-    public $name;
+    public string $name;
     /**
      * Assoc array (name=>value) of the method's arguments metadata
      *
      * @var ArgumentMetadata[]
      */
-    public $arguments = [];
+    public array $arguments = [];
     /**
      * The return type of the method
      *
      * @var TypeMetadata|null
      */
-    public $returnType = null;
+    public ?TypeMetadata $returnType = null;
     /**
      * Access type of the method ('private'|'public'|'protected')
      *
      * @var string
      */
-    public $access;
+    public string $access;
 
     /**
      * TypeMetadata constructor.
@@ -80,7 +80,7 @@ class MethodMetadata extends AbstractMetadataHost
      * @param null $default
      * @return ArgumentMetadata|null
      */
-    public function getArgumentMetadata(string $name, $default = null)
+    public function getArgumentMetadata(string $name, $default = null): ?ArgumentMetadata
     {
         return array_key_exists($name, $this->arguments) ? $this->arguments[$name] : $default;
     }

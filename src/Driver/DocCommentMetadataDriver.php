@@ -36,7 +36,7 @@ class DocCommentMetadataDriver extends ReflectionMetadataDriver
     {
         $propertyMetadata = parent::getPropertyMetadata($property);
         $type = $this->fromDocBlockString($property->getDocComment(), $property->getDeclaringClass());
-        if ($type !== null) {
+        if ($type !== null && $propertyMetadata) {
             $propertyMetadata->type = $type;
         }
         return $propertyMetadata;
@@ -54,7 +54,7 @@ class DocCommentMetadataDriver extends ReflectionMetadataDriver
      * @param ReflectionClass|null $reflectionClass
      * @return TypeMetadata|null
      */
-    private function fromDocBlockString($docBlock, ?ReflectionClass $reflectionClass, $target = 'var', $parsed = false)
+    private function fromDocBlockString($docBlock, ?ReflectionClass $reflectionClass, string $target = 'var', bool $parsed = false): ?TypeMetadata
     {
         $props = $parsed === true ? $docBlock : $this->parseDocblockProperties($docBlock);
         if (isset($props[$target][0])) {
@@ -69,7 +69,7 @@ class DocCommentMetadataDriver extends ReflectionMetadataDriver
      * @param string|null $docBlock Full method docblock
      * @return array
      */
-    private function parseDocblockProperties(?string $docBlock)
+    private function parseDocblockProperties(?string $docBlock): array
     {
         $properties = array();
         $docBlock = substr($docBlock, 3, -2);
@@ -90,7 +90,7 @@ class DocCommentMetadataDriver extends ReflectionMetadataDriver
      * @param ReflectionClass|null $reflectionClass
      * @return TypeMetadata|null
      */
-    private function fromDocBlockProperty($property, ?ReflectionClass $reflectionClass)
+    private function fromDocBlockProperty($property, ?ReflectionClass $reflectionClass): ?TypeMetadata
     {
         $isNullable = false;
         $isArray = false;
@@ -125,7 +125,7 @@ class DocCommentMetadataDriver extends ReflectionMetadataDriver
      * @param $isNullable
      * @return bool
      */
-    private function isMultipleTypes($docBlockType, &$realType, &$isNullable)
+    private function isMultipleTypes($docBlockType, &$realType, &$isNullable): bool
     {
         if (strpos($docBlockType, '|') !== false) {
             if (stripos('|' . $docBlockType . '|', '|null|') !== false) {
@@ -148,7 +148,7 @@ class DocCommentMetadataDriver extends ReflectionMetadataDriver
      */
     protected function getTypeNameFromUseStatements(string $typeName, ?ReflectionClass $reflectionClass): ?string
     {
-        if($reflectionClass === null) {
+        if ($reflectionClass === null) {
             return null;
         }
         $statements = UseStatements::getUseStatements($reflectionClass);
@@ -165,20 +165,22 @@ class DocCommentMetadataDriver extends ReflectionMetadataDriver
     {
         $methodMetadata = parent::getMethodMetadata($method);
         $docBlock = null;
-        if ($methodMetadata->returnType === null) {
-            $docBlock = $this->parseDocblockProperties($method->getDocComment());
-            $methodMetadata->returnType = $this->fromDocBlockString($docBlock, $method->getDeclaringClass(), 'return', true);
-        }
-        $arguments = $method->getParameters();
-        foreach ($arguments as $argument) {
-            $argumentMetadata = $methodMetadata->getArgumentMetadata($argument->getName());
-            if ($argumentMetadata === null) {
-                $argumentMetadata = new ArgumentMetadata($argument->getName());
-                $methodMetadata->addArgumentMetadata($argumentMetadata);
+        if ($methodMetadata) {
+            if ($methodMetadata->returnType === null) {
+                $docBlock = $this->parseDocblockProperties($method->getDocComment());
+                $methodMetadata->returnType = $this->fromDocBlockString($docBlock, $method->getDeclaringClass(), 'return', true);
             }
-            if ($argumentMetadata->type === null) {
-                $docBlock = $docBlock ?? $this->parseDocblockProperties($method->getDocComment());
-                $argumentMetadata->type = $this->parseDocBlockParameter($docBlock, $method->getDeclaringClass(), $argumentMetadata->name, true);
+            $arguments = $method->getParameters();
+            foreach ($arguments as $argument) {
+                $argumentMetadata = $methodMetadata->getArgumentMetadata($argument->getName());
+                if ($argumentMetadata === null) {
+                    $argumentMetadata = new ArgumentMetadata($argument->getName());
+                    $methodMetadata->addArgumentMetadata($argumentMetadata);
+                }
+                if ($argumentMetadata->type === null) {
+                    $docBlock = $docBlock ?? $this->parseDocblockProperties($method->getDocComment());
+                    $argumentMetadata->type = $this->parseDocBlockParameter($docBlock, $method->getDeclaringClass(), $argumentMetadata->name, true);
+                }
             }
         }
         return $methodMetadata;

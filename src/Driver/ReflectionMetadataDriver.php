@@ -13,6 +13,7 @@ use Alks\Metadata\Metadata\MethodMetadata;
 use Alks\Metadata\Metadata\PropertyMetadata;
 use Alks\Metadata\Metadata\TypeMetadata;
 use ReflectionMethod;
+use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionProperty;
 use ReflectionType;
@@ -35,7 +36,7 @@ class ReflectionMetadataDriver extends AbstractMetadataDriver
      */
     public function getPropertyMetadata(ReflectionProperty $property): ?PropertyMetadata
     {
-        $propertyMetadata = new PropertyMetadata($propertyName = $property->getName());
+        $propertyMetadata = new PropertyMetadata($property->getName());
         $propertyMetadata->access = $this->resolveAccess($property);
         return $propertyMetadata;
     }
@@ -48,7 +49,7 @@ class ReflectionMetadataDriver extends AbstractMetadataDriver
      */
     public function getMethodMetadata(ReflectionMethod $method): ?MethodMetadata
     {
-        $methodMetadata = new MethodMetadata($methodName = $method->getName());
+        $methodMetadata = new MethodMetadata($method->getName());
         $methodMetadata->access = $this->resolveAccess($method);
         $methodMetadata->returnType = $this->getTypeMetadata($method->getReturnType());
         $arguments = $method->getParameters();
@@ -63,10 +64,10 @@ class ReflectionMetadataDriver extends AbstractMetadataDriver
      * Note that in the current PHP implementation there is no type hint for array of complex or flat items
      * (eg string[]) so using this method will result in false data.
      *
-     * @param ReflectionType|null $reflectionType
+     * @param ReflectionNamedType|null $reflectionType
      * @return TypeMetadata|null
      */
-    protected function getTypeMetadata(ReflectionType $reflectionType = null): ?TypeMetadata
+    protected function getTypeMetadata(ReflectionNamedType $reflectionType = null): ?TypeMetadata
     {
         if ($reflectionType !== null) {
             $typeMetadata = new TypeMetadata($reflectionType->getName());

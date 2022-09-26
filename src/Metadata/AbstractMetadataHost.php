@@ -22,13 +22,13 @@ abstract class AbstractMetadataHost
      *
      * @var AbstractMetadata[][]
      */
-    public $metadata = [];
+    public array $metadata = [];
     /**
      * Collection of custom attributes (key/value)
      *
      * @var array
      */
-    public $attrs = [];
+    public array $attrs = [];
 
     /**
      * Adds custom metadata to the class
@@ -46,7 +46,7 @@ abstract class AbstractMetadataHost
      * @param $key
      * @param $value
      */
-    public function addAttr($key, $value)
+    public function addAttr($key, $value): void
     {
         $this->attrs[$key] = $value;
     }
