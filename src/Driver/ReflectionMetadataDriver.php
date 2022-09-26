@@ -16,7 +16,6 @@ use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionProperty;
-use ReflectionType;
 
 /**
  * @package Metadata
@@ -38,6 +37,7 @@ class ReflectionMetadataDriver extends AbstractMetadataDriver
     {
         $propertyMetadata = new PropertyMetadata($property->getName());
         $propertyMetadata->access = $this->resolveAccess($property);
+        $propertyMetadata->type = $this->getTypeMetadata($property->getType());
         return $propertyMetadata;
     }
 
@@ -62,7 +62,7 @@ class ReflectionMetadataDriver extends AbstractMetadataDriver
     /**
      * Generates a TypeMetadata instance from reflection. If the ReflectionType is null the method will return null.
      * Note that in the current PHP implementation there is no type hint for array of complex or flat items
-     * (eg string[]) so using this method will result in false data.
+     * (e.g. string[]) so using this method will result in false data.
      *
      * @param ReflectionNamedType|null $reflectionType
      * @return TypeMetadata|null
