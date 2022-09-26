@@ -26,7 +26,7 @@ abstract class AbstractCache implements CacheInterface
      * @param $key
      * @throws InvalidArgumentException
      */
-    protected function validateKey($key)
+    protected function validateKey($key): void
     {
         if (!is_string($key)) {
             throw new InvalidArgumentException(sprintf('Cache key must be string, "%s" given', gettype($key)));

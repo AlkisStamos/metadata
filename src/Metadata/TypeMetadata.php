@@ -22,31 +22,31 @@ class TypeMetadata
      *
      * @var string
      */
-    public $name;
+    public string $name;
     /**
      * If the type refers to collection of elements instead of one
      *
      * @var bool
      */
-    public $isArray = false;
+    public bool $isArray = false;
     /**
      * If nullable is supported except the type name only
      *
      * @var bool
      */
-    public $isNullable = false;
+    public bool $isNullable = false;
     /**
-     * If is a php flat type (string, double etc) or array object
+     * If is a php flat type (string, double etc.) or array object
      *
      * @var bool
      */
-    public $isFlat = false;
+    public bool $isFlat = false;
     /**
      * Extra metadata property "format" to be set on objects like date time
      *
      * @var null|string
      */
-    public $format = null;
+    public ?string $format = null;
 
     /**
      * TypeMetadata constructor.
@@ -63,7 +63,7 @@ class TypeMetadata
      *
      * @return TypeMetadata
      */
-    public static function mixedType()
+    public static function mixedType(): TypeMetadata
     {
         $self = new self('mixed');
         $self->isFlat = true;

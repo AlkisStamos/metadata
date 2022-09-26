@@ -23,33 +23,33 @@ class PropertyMetadata extends AbstractMetadataHost
      *
      * @var string
      */
-    public $name;
+    public string $name;
     /**
      * The type metadata of the property
      *
-     * @var TypeMetadata
+     * @var TypeMetadata|null
      */
-    public $type;
+    public ?TypeMetadata $type = null;
     /**
      * Access type of the property ('private'|'public'|'protected')
      *
      * @var string
      */
-    public $access;
+    public string $access;
     /**
-     * Getter name of the property. By default is null and the getter will be selected by naming strategies, if is set
-     * the naming strategies would be overriden
+     * Getter name of the property. By default, is null and the getter will be selected by naming strategies, if is set
+     * the naming strategies would be overridden
      *
      * @var string|null
      */
-    public $setter = null;
+    public ?string $setter = null;
     /**
-     * Setter name of the property. By default is null and the getter will be selected by naming strategies, if is set
-     * the naming strategies would be overriden
+     * Setter name of the property. By default, is null and the getter will be selected by naming strategies, if is set
+     * the naming strategies would be overridden
      *
      * @var string|null
      */
-    public $getter = null;
+    public ?string $getter = null;
 
     /**
      * TypeMetadata constructor.

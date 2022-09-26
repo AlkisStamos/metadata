@@ -34,13 +34,13 @@ class AnnotationMetadataDriver extends DocCommentMetadataDriver
      *
      * @var Reader
      */
-    private $annotationReader;
+    private Reader $annotationReader;
     /**
      * Local cache of class metadata
      *
      * @var ClassMetadata[]
      */
-    private $cache = [];
+    private array $cache = [];
 
     /**
      * AnnotationMetadataDriver constructor
@@ -66,7 +66,7 @@ class AnnotationMetadataDriver extends DocCommentMetadataDriver
         $classMetadata = parent::getClassMetadata($class);
         $annotations = $this->annotationReader->getClassAnnotations($class);
         foreach ($annotations as $annotation) {
-            if ($annotation instanceof Annotation) {
+            if ($annotation instanceof Annotation && $classMetadata) {
                 $classMetadata->addMetadata($annotation);
             }
         }
@@ -85,7 +85,7 @@ class AnnotationMetadataDriver extends DocCommentMetadataDriver
         $methodMetadata = parent::getMethodMetadata($method);
         $annotations = $this->annotationReader->getMethodAnnotations($method);
         foreach ($annotations as $annotation) {
-            if ($annotation instanceof Annotation) {
+            if ($annotation instanceof Annotation && $methodMetadata) {
                 $methodMetadata->addMetadata($annotation);
             }
         }
@@ -103,7 +103,7 @@ class AnnotationMetadataDriver extends DocCommentMetadataDriver
         $propertyMetadata = parent::getPropertyMetadata($property);
         $annotations = $this->annotationReader->getPropertyAnnotations($property);
         foreach ($annotations as $annotation) {
-            if ($annotation instanceof Annotation) {
+            if ($annotation instanceof Annotation && $propertyMetadata) {
                 $propertyMetadata->addMetadata($annotation);
                 if ($annotation instanceof Property) {
                     $propertyMetadata->setter = $annotation->getSetter();
@@ -132,7 +132,7 @@ class AnnotationMetadataDriver extends DocCommentMetadataDriver
      * @param ReflectionClass|null $reflectionClass
      * @return TypeMetadata|null
      */
-    protected function typeFromPropertyAnnotation(Property $property, ?ReflectionClass $reflectionClass)
+    protected function typeFromPropertyAnnotation(Property $property, ?ReflectionClass $reflectionClass): ?TypeMetadata
     {
         $typeName = $property->getType();
         if ($typeName === null) {
@@ -144,12 +144,10 @@ class AnnotationMetadataDriver extends DocCommentMetadataDriver
             $isArray = true;
         }
         $isFlat = $this->isSimpleType($typeName);
-        if (!$isFlat) {
-            if (!class_exists($typeName)) {
-                $typeName = $this->getTypeNameFromUseStatements($typeName, $reflectionClass);
-                if ($typeName === null) {
-                    return null;
-                }
+        if (!$isFlat && !class_exists($typeName)) {
+            $typeName = $this->getTypeNameFromUseStatements($typeName, $reflectionClass);
+            if ($typeName === null) {
+                return null;
             }
         }
         $typeMetadata = new TypeMetadata($typeName);
